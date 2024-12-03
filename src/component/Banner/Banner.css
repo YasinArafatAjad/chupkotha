@@ -1,0 +1,46 @@
+/* ===========header Part========== */
+/* google fonts */
+@import url('https://fonts.maateen.me/charukola-ultra-light/font.css');
+.logo-txt {
+  font-family: 'CharukolaUltraLight', sans-serif;
+  
+}
+
+.logo-txt p:first-child,
+.footer-logo-txt p:first-child {
+  -webkit-text-stroke: 0.5px #222;
+}
+.logo-txt p:last-child,
+.footer-logo-txt p:last-child {
+  color: #ad0808;
+  animation: logo 4s ease-in-out infinite;
+}
+@keyframes logo {
+  0%,
+  100% {
+    clip-path: polygon(
+      39% 47%,
+      48% 64%,
+      59% 74%,
+      80% 77%,
+      100% 69%,
+      100% 100%,
+      0 100%,
+      0 38%,
+      19% 36%
+    );
+  }
+  50% {
+    clip-path: polygon(
+      38% 72%,
+      56% 66%,
+      68% 53%,
+      86% 48%,
+      100% 49%,
+      100% 100%,
+      0 100%,
+      0 65%,
+      19% 73%
+    );
+  }
+}
