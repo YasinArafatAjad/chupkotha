@@ -1,6 +1,17 @@
 {
   "postData": [
     {
+      "id": 93,
+      "img": "./assets/93.jpg",
+      "video": "",
+      "caption": "আমার ছোট্ট বেলার একটা ভালো অভ্যাস,\nঅপ্রয়োজনীয় জিনিস \nআমার মনে থাকে না ",
+      "like": 90269,
+      "share": 111595,
+      "date": "16 Dec 2024",
+      "time": "10:03 PM",
+      "user": "Yasin Arafat Ajad"
+    },
+    {
       "id": 92,
       "img": "./assets/92.jpg",
       "video": "",
