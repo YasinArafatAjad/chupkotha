@@ -1,6 +1,17 @@
 {
   "postData": [
     {
+      "id": 95,
+      "img": "./assets/95.jpg",
+      "video": "",
+      "caption": "আমার হাত ভর্তি চাঁদের আলো\nধরতে গেলেই নাই\n~হুমায়ূন আহমেদ ",
+      "like": 246799 ,
+      "share":  4686,
+      "date": "18 Dec 2024",
+      "time": "12:22 AM",
+      "user": "Yasin Arafat Ajad"
+    },
+    {
       "id": 94,
       "img": "./assets/94.jpg",
       "video": "",
