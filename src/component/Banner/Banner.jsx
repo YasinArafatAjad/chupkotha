@@ -67,7 +67,7 @@ const Banner = () => {
           <div className="menubar flex flex-row gap-2">
             <Link to={'/profile'} className="btn btn-circle swap swap-rotate text-[#323232] dark:text-[#fbfcfc] text-center ">
               <IoPerson size={25} />
-            </a>
+            </Link>
             <a href="mailto:yasinarafatazad173@gmail.com" target="_blank" className="btn btn-circle swap swap-rotate text-[#323232] dark:text-[#fbfcfc] text-center ">
               <TbMessageDots size={25} />
             </a>
