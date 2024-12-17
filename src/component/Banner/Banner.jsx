@@ -3,7 +3,7 @@ import "./Banner.css";
 import { IoPerson } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { AiFillHome } from "react-icons/ai";
-import { TbMessageDots } from "react-icons/tb";
+import { FaFacebookMessenger } from "react-icons/fa6";
 
 const Banner = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -69,7 +69,7 @@ const Banner = () => {
               <IoPerson size={25} />
             </Link>
             <a href="mailto:yasinarafatazad173@gmail.com" target="_blank" className="btn btn-circle swap swap-rotate text-[#323232] dark:text-[#fbfcfc] text-center ">
-              <TbMessageDots size={25} />
+              <FaFacebookMessenger size={25}/>
             </a>
             <Link to={'/'} className="btn btn-circle swap swap-rotate text-[#323232] dark:text-[#fbfcfc] text-center ">
               <AiFillHome size={25} />
