@@ -3,6 +3,7 @@ import "./Banner.css";
 import { IoPerson } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { AiFillHome } from "react-icons/ai";
+import { TbMessageDots } from "react-icons/tb";
 
 const Banner = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -64,12 +65,15 @@ const Banner = () => {
             </div>
           </Link>
           <div className="menubar flex flex-row gap-2">
-            <Link to={'/profile'} className="btn btn-circle swap swap-rotate text-[#323232] dark:text-[#fbfcfc] text-center ">
+            <a src={'/profile'} className="btn btn-circle swap swap-rotate text-[#323232] dark:text-[#fbfcfc] text-center ">
               <IoPerson size={25} />
-            </Link>
-            <Link to={'/'} className="btn btn-circle swap swap-rotate text-[#323232] dark:text-[#fbfcfc] text-center ">
+            </a>
+            <a href="mailto:yasinarafatazad173@gmail.com" target="_blank" className="btn btn-circle swap swap-rotate text-[#323232] dark:text-[#fbfcfc] text-center ">
+              <TbMessageDots size={25} />
+            </a>
+            <a src={'/'} className="btn btn-circle swap swap-rotate text-[#323232] dark:text-[#fbfcfc] text-center ">
               <AiFillHome size={25} />
-            </Link>
+            </a>
           </div>
         </div>
       </section>
