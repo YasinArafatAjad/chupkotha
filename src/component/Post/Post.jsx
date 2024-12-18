@@ -106,7 +106,7 @@ const Post = ({
                 </div>
               </div>
               {/* more btn */}
-              <div className="dropdown dropdown-left">
+              <div className="dropdown dropdown-bottom dropdown-end">
                 <div tabIndex={0} role="button" className="btn m-1">
                   <IoIosMore
                     className="dark:text-white font-bold text-3xl"
