@@ -2,7 +2,7 @@
 import "./Timer.css";
 import FlipClockCountdown from "@leenguyen/react-flip-clock-countdown";
 import "@leenguyen/react-flip-clock-countdown/dist/index.css";
-import comeImg from "../../../public/asset/coming.png";
+import comeImg from "../../../public/assets/coming.png";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const Timer = () => {

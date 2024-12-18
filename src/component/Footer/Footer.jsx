@@ -1,6 +1,6 @@
 import { FaDownload, FaWhatsapp } from "react-icons/fa";
 import "./Footer.css";
-import TimezoneApp from "../../../public/asset/TimeZone.apk";
+import TimezoneApp from "../../../public/assets/TimeZone.apk";
 
 const Footer = () => {
   return (
