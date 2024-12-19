@@ -1,7 +1,7 @@
 import "./Profile.css";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-import userImage from "../../../public/Custom_Profile/user.jpg";
+import userImage from "../../../public/postImg/99.jpg";
 import flwr1 from "../../../public/followerImg/flwr1.jpg";
 import flwr2 from "../../../public/followerImg/flwr2.jpg";
 import flwr3 from "../../../public/followerImg/flwr3.jpg";
