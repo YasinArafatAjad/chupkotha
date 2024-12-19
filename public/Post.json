@@ -1,6 +1,17 @@
 {
   "postData": [
     {
+      "id": 99,
+      "img": "./postImg/99.jpg",
+      "video": "",
+      "caption": "তোমারে যে চাহিয়াছে ভুলে একদিন,\nসে জানে তোমারে ভোলা কি কঠিন\n\n~ কাজী নজরুল ইসলাম",
+      "like":  83728864,
+      "share":  52728,
+      "date": "19 Dec 2024",
+      "time": "07:37 PM",
+      "user": "Yasin Arafat Ajad"
+    },
+    {
       "id": 98,
       "img": "./postImg/98.jpg",
       "video": "",

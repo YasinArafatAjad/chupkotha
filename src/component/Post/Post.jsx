@@ -51,7 +51,7 @@ const Post = ({
   // Copy Link Handle
   const handleCopyLink = () => {
     navigator.clipboard
-      .writeText("timezone-seven.vercel.app")
+      .writeText("chupkotha.vercel.app")
       .then(() => {
         alert("Text copied to clipboard!");
       })
