@@ -1,6 +1,17 @@
 {
   "postData": [
     {
+      "id": 100,
+      "img": "./postImg/100.jpg",
+      "video": "",
+      "caption": "চুলের ভাঁজে\nচশমা রাখার স্টাইলটা দারুণ ☺️",
+      "like":  63837,
+      "share":  63829,
+      "date": "21 Dec 2024",
+      "time": "09:41 PM",
+      "user": "Yasin Arafat Ajad"
+    },
+    {
       "id": 99,
       "img": "./postImg/99.jpg",
       "video": "",
