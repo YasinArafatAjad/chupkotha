@@ -1,34 +1,27 @@
 import { useState } from 'react';
 import { MoreHorizontal, ExternalLink, Flag, Link as LinkIcon, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
-import { doc, deleteDoc } from 'firebase/firestore';
-import { ref, deleteObject } from 'firebase/storage';
-import { db, storage } from '../../lib/firebase';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { usePostDeletion } from '../../hooks/usePostDeletion';
 import toast from 'react-hot-toast';
 
 interface PostMenuProps {
   postId: string;
-  imageUrl: string;
+  imageUrl?: string;
   userId: string;
   onReport?: () => void;
 }
 
 export default function PostMenu({ postId, imageUrl, userId, onReport }: PostMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const navigate = useNavigate();
   const { currentUser } = useAuth();
-
-  const handleOpenImage = () => {
-    window.open(imageUrl, '_blank');
-    setIsOpen(false);
-  };
+  const { handleDelete, isDeleting } = usePostDeletion();
+  const navigate = useNavigate();
 
   const handleCopyLink = async () => {
-    const postUrl = `${window.location.origin}/post/${postId}`;
     try {
+      const postUrl = `${window.location.origin}/post/${postId}`;
       await navigator.clipboard.writeText(postUrl);
       toast.success('Link copied to clipboard');
     } catch (error) {
@@ -37,43 +30,10 @@ export default function PostMenu({ postId, imageUrl, userId, onReport }: PostMen
     setIsOpen(false);
   };
 
-  const handleViewPost = () => {
-    navigate(`/post/${postId}`);
-    setIsOpen(false);
-  };
-
   const handleReport = () => {
     onReport?.();
     toast.success('Post reported. Thank you for helping keep our community safe.');
     setIsOpen(false);
-  };
-
-  const handleDelete = async () => {
-    if (!currentUser || currentUser.uid !== userId || isDeleting) return;
-
-    const confirmDelete = window.confirm('Are you sure you want to delete this post? This action cannot be undone.');
-    if (!confirmDelete) return;
-
-    setIsDeleting(true);
-    try {
-      // Delete image from storage if exists
-      if (imageUrl) {
-        const imageRef = ref(storage, imageUrl);
-        await deleteObject(imageRef);
-      }
-
-      // Delete post document
-      await deleteDoc(doc(db, 'posts', postId));
-      
-      toast.success('Post deleted successfully');
-      navigate('/');
-    } catch (error) {
-      console.error('Error deleting post:', error);
-      toast.error('Failed to delete post');
-    } finally {
-      setIsDeleting(false);
-      setIsOpen(false);
-    }
   };
 
   return (
@@ -102,12 +62,16 @@ export default function PostMenu({ postId, imageUrl, userId, onReport }: PostMen
               className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 py-1"
             >
               <button
-                onClick={handleViewPost}
+                onClick={() => {
+                  navigate(`/post/${postId}`);
+                  setIsOpen(false);
+                }}
                 className="w-full px-4 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <ExternalLink className="w-4 h-4" />
                 <span>View post</span>
               </button>
+
               <button
                 onClick={handleCopyLink}
                 className="w-full px-4 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -115,16 +79,13 @@ export default function PostMenu({ postId, imageUrl, userId, onReport }: PostMen
                 <LinkIcon className="w-4 h-4" />
                 <span>Copy link</span>
               </button>
-              <button
-                onClick={handleOpenImage}
-                className="w-full px-4 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <ExternalLink className="w-4 h-4" />
-                <span>Open image in new tab</span>
-              </button>
+
               {currentUser?.uid === userId && (
                 <button
-                  onClick={handleDelete}
+                  onClick={async () => {
+                    const success = await handleDelete(postId, imageUrl);
+                    if (success) setIsOpen(false);
+                  }}
                   disabled={isDeleting}
                   className="w-full px-4 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
                 >
@@ -132,6 +93,7 @@ export default function PostMenu({ postId, imageUrl, userId, onReport }: PostMen
                   <span>{isDeleting ? 'Deleting...' : 'Delete post'}</span>
                 </button>
               )}
+
               <button
                 onClick={handleReport}
                 className="w-full px-4 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
