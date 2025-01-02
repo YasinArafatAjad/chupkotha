@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import PostHeader from './PostHeader';
-import PostImage from './PostImage';
-import PostActions from './PostActions';
-import PostComments from './PostComments';
-import ImageModal from './ImageModal';
-import { motion } from 'framer-motion';
-import { useOfflineCache } from '../../hooks/useOfflineCache';
-import { PostService } from '../../lib/firebase/posts/postService';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import PostHeader from "./PostHeader";
+import PostImage from "./PostImage";
+import PostActions from "./PostActions";
+import PostComments from "./PostComments";
+import ImageModal from "./ImageModal";
+import { motion } from "framer-motion";
+import { useOfflineCache } from "../../hooks/useOfflineCache";
+import { PostService } from "../../lib/firebase/posts/postService";
+import LinesEllipsis from "react-lines-ellipsis";
 
 interface PostCardProps {
   post: {
@@ -43,9 +44,11 @@ export default function PostCard({ post }: PostCardProps) {
   }, [post]);
 
   const handleLike = async () => {
-    return PostService.toggleLike(post.id, currentUser?.uid || '');
+    return PostService.toggleLike(post.id, currentUser?.uid || "");
   };
-
+  // Line ellipsis
+  const [ellipsis, setEllipsis] = useState(false);
+  const handleEllipsis = () => setEllipsis(!ellipsis);
   return (
     <>
       <motion.div
@@ -57,34 +60,44 @@ export default function PostCard({ post }: PostCardProps) {
           userId={post.userId}
           userName={post.userName}
           userPhoto={post.userPhoto}
-          imageUrl={post.imageUrl || ''}
+          imageUrl={post.imageUrl || ""}
           postId={post.id}
           createdAt={post.createdAt}
           isPublic={post.isPublic}
         />
 
         <div className="px-4 pb-4">
-          <div className="text-gray-600 dark:text-gray-300 line-clamp-3">
-            {post.caption}
-          </div>
-          {post.caption.length > 150 && (
-            <button 
-              onClick={() => setShowImageModal(true)}
-              className="text-sm text-primary hover:text-primary/90 mt-1"
+          {ellipsis ? (
+            <p
+              onClick={handleEllipsis}
+              className="cursor-pointer text-wrap whitespace-pre text-sm text-gray-600 dark:text-gray-300"
             >
-              Read more
-            </button>
+              {post.caption}
+            </p>
+          ) : (
+            <div
+              onClick={handleEllipsis}
+              className="cursor-pointer text-wrap whitespace-pre text-sm text-gray-600 dark:text-gray-300"
+            >
+              <LinesEllipsis
+                text={post.caption}
+                maxLine={4}
+                ellipsis={<span>...see more</span>}
+                trimRight
+                basedOn="letters"
+              />
+            </div>
           )}
         </div>
-        
+
         {post.imageUrl && (
-          <PostImage 
-            imageUrl={post.imageUrl} 
+          <PostImage
+            imageUrl={post.imageUrl}
             caption={post.caption}
             onClick={() => setShowImageModal(true)}
           />
         )}
-        
+
         <PostActions
           postId={post.id}
           userId={currentUser?.uid}
