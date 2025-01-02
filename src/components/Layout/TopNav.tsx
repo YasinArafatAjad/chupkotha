@@ -5,13 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
 import NotificationDropdown from './NotificationDropdown';
-// import toast from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import Logo from './Logo';
 
 export default function TopNav() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [showNotifications, setShowNotifications] = useState(true);
+  const [showNotifications, setShowNotifications] = useState(false);
   const { currentUser } = useAuth();
   const notifications = useNotifications();
   const navigate = useNavigate();
@@ -38,12 +38,15 @@ export default function TopNav() {
           initial={{ y: -100 }}
           animate={{ y: 0 }}
           exit={{ y: -100 }}
-          className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 z-50 border-b dark:border-gray-800"
+          className="overflow-hidden fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 z-50 border-b dark:border-gray-800"
         >
-          <div className="container overflow-hidden mx-auto px-4 h-14 flex items-center justify-between">
-            <Link to="/" className="flex items-center">
+          <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+            <Link to="/" className="flex items-center ">
+            {/* ========| LOGO |======== */}
               <Logo />
             </Link>
+            
+
             <div className="relative">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
