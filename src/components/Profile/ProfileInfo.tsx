@@ -15,7 +15,7 @@ export default function ProfileInfo({
   username, 
   userId,  // Add userId to destructuring
   bio, 
-  website 
+  // website 
 }: ProfileInfoProps) {
   const handleCopyUserId = () => {
     navigator.clipboard.writeText(userId);
@@ -40,7 +40,7 @@ export default function ProfileInfo({
         </button>
       </div>
       {bio && <p className="text-gray-800 dark:text-gray-200">{bio}</p>}
-      {website && (
+      {/* {website && (
         <a 
           href={website}
           target="_blank"
@@ -49,7 +49,7 @@ export default function ProfileInfo({
         >
           {website}
         </a>
-      )}
+      )} */}
     </motion.div>
   );
 }

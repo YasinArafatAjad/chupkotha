@@ -1,12 +1,18 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, Moon, Sun, User, Settings as SettingsIcon } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useTheme } from '../../contexts/ThemeContext';
-import { auth } from '../../lib/firebase';
-import toast from 'react-hot-toast';
-import EditProfileModal from '../Profile/EditProfileModal';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  LogOut,
+  Moon,
+  Sun,
+  User,
+  Settings as SettingsIcon,
+} from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import { useTheme } from "../../contexts/ThemeContext";
+import { auth } from "../../lib/firebase";
+import toast from "react-hot-toast";
+import EditProfileModal from "../Profile/EditProfileModal";
 
 export default function SettingsMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,10 +24,10 @@ export default function SettingsMenu() {
   const handleLogout = async () => {
     try {
       await auth.signOut();
-      toast.success('Logged out successfully');
-      navigate('/login');
+      toast.success("Logged out successfully");
+      navigate("/login");
     } catch (error) {
-      toast.error('Failed to log out');
+      toast.error("Failed to log out");
     }
     setIsOpen(false);
   };
@@ -58,18 +64,7 @@ export default function SettingsMenu() {
               <div className="p-2 space-y-1">
                 <button
                   onClick={() => {
-                    setShowEditProfile(true);
-                    handleClose();
-                  }}
-                  className="flex items-center space-x-2 w-full p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  <User className="w-5 h-5" />
-                  <span>Edit Profile</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    navigate('/users');
+                    navigate("/users");
                     handleClose();
                   }}
                   className="flex items-center space-x-2 w-full p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -77,7 +72,7 @@ export default function SettingsMenu() {
                   <User className="w-5 h-5" />
                   <span>View All Users</span>
                 </button>
-                
+
                 <button
                   onClick={() => {
                     toggleTheme();
@@ -90,7 +85,7 @@ export default function SettingsMenu() {
                   ) : (
                     <Moon className="w-5 h-5" />
                   )}
-                  <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
+                  <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
                 </button>
 
                 <button
@@ -106,9 +101,9 @@ export default function SettingsMenu() {
         )}
       </AnimatePresence>
 
-      <EditProfileModal 
-        isOpen={showEditProfile} 
-        onClose={() => setShowEditProfile(false)} 
+      <EditProfileModal
+        isOpen={showEditProfile}
+        onClose={() => setShowEditProfile(false)}
       />
     </>
   );

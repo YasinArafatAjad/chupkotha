@@ -1,7 +1,7 @@
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { MessageCircle, UserPlus, UserMinus } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { MessageCircle, UserPlus, UserMinus, Settings } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface ProfileActionsProps {
   userId: string;
@@ -16,7 +16,7 @@ export default function ProfileActions({
   isOwnProfile,
   isFollowing,
   onFollow,
-  onEditProfile
+  onEditProfile,
 }: ProfileActionsProps) {
   const navigate = useNavigate();
 
@@ -27,9 +27,9 @@ export default function ProfileActions({
   const handleFollow = async () => {
     try {
       await onFollow();
-      toast.success(isFollowing ? 'Unfollowed user' : 'Following user');
+      toast.success(isFollowing ? "Unfollowed user" : "Following user");
     } catch (error) {
-      toast.error('Failed to update follow status');
+      toast.error("Failed to update follow status");
     }
   };
 
@@ -38,18 +38,19 @@ export default function ProfileActions({
       {isOwnProfile ? (
         <button
           onClick={onEditProfile}
-          className="w-full py-2 px-4 bg-gray-100 dark:bg-gray-800 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+          className="w-full py-2 px-4 border border-gray-300 dark:border-gray-700 rounded-lg flex items-center justify-center space-x-2"
         >
-          Edit Profile
+          <Settings className="w-4 h-4" />
+          <span>Edit Profile</span>
         </button>
       ) : (
         <>
           <button
             onClick={handleFollow}
             className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-              isFollowing 
-                ? 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700' 
-                : 'bg-primary text-white hover:bg-primary/90'
+              isFollowing
+                ? "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                : "bg-primary text-white hover:bg-primary/90"
             }`}
           >
             <div className="flex items-center justify-center gap-2">

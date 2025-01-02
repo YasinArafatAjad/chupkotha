@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Camera, X } from 'lucide-react';
+// import { Camera, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCreatePost } from '../../hooks/useCreatePost';
@@ -12,18 +12,18 @@ export default function CreatePost() {
   const { currentUser } = useAuth();
   const { handleCreatePost, loading } = useCreatePost();
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      try {
-        setImage(file);
-        const previewUrl = URL.createObjectURL(file);
-        setPreview(previewUrl);
-      } catch (error: any) {
-        toast.error(error.message || 'Failed to load image');
-      }
-    }
-  };
+  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     try {
+  //       setImage(file);
+  //       const previewUrl = URL.createObjectURL(file);
+  //       setPreview(previewUrl);
+  //     } catch (error: any) {
+  //       toast.error(error.message || 'Failed to load image');
+  //     }
+  //   }
+  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +64,7 @@ export default function CreatePost() {
       className="max-w-xl mx-auto p-4"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="relative aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
+        {/* <div className="relative aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
           {preview ? (
             <>
               <img
@@ -94,7 +94,7 @@ export default function CreatePost() {
               />
             </label>
           )}
-        </div>
+        </div> */}
 
         <textarea
           value={caption}

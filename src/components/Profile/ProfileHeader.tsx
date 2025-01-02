@@ -1,5 +1,5 @@
-import { User, Settings } from 'lucide-react';
-import { motion } from 'framer-motion';
+import {  Settings } from 'lucide-react';
+// import { motion } from 'framer-motion';
 
 interface ProfileHeaderProps {
   profile: {
@@ -30,10 +30,10 @@ export default function ProfileHeader({ profile, isOwnProfile, onEditProfile }: 
       </div>
 
       <div className="flex justify-around text-center">
-        <div>
+        {/* <div>
           <div className="font-semibold">{profile.postsCount}</div>
           <div className="text-sm text-gray-500">Posts</div>
-        </div>
+        </div> */}
         <div>
           <div className="font-semibold">{profile.followers?.length || 0}</div>
           <div className="text-sm text-gray-500">Followers</div>
@@ -43,16 +43,6 @@ export default function ProfileHeader({ profile, isOwnProfile, onEditProfile }: 
           <div className="text-sm text-gray-500">Following</div>
         </div>
       </div>
-
-      {isOwnProfile && (
-        <button
-          onClick={onEditProfile}
-          className="w-full py-2 px-4 border border-gray-300 dark:border-gray-700 rounded-lg flex items-center justify-center space-x-2"
-        >
-          <Settings className="w-4 h-4" />
-          <span>Edit Profile</span>
-        </button>
-      )}
     </div>
   );
 }
