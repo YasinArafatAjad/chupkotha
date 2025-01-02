@@ -4,8 +4,10 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { Camera } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { auth } from '../lib/firebase';
+import { signInWithGoogle } from '../lib/auth/googleAuth';
 import toast from 'react-hot-toast';
 import LoadingAnimation from '../components/common/LoadingAnimation';
+import GoogleButton from '../components/auth/GoogleButton';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -22,6 +24,19 @@ export default function Login() {
       navigate('/');
     } catch (error: any) {
       toast.error(error.message || 'Failed to sign in');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    try {
+      await signInWithGoogle();
+      toast.success('Welcome back!');
+      navigate('/');
+    } catch (error) {
+      // Error is already handled in signInWithGoogle
     } finally {
       setLoading(false);
     }
@@ -74,6 +89,8 @@ export default function Login() {
           >
             {loading ? <LoadingAnimation /> : 'Sign in'}
           </button>
+
+          <GoogleButton onClick={handleGoogleLogin} disabled={loading} />
         </form>
 
         <div className="text-center">

@@ -13,22 +13,18 @@ export interface Notification {
 }
 
 export function subscribeToNotifications(userId: string, callback: (notifications: Notification[]) => void) {
-  // Modified query to work without composite index initially
   const q = query(
     collection(db, `users/${userId}/notifications`),
+    where('read', '==', false),
     orderBy('createdAt', 'desc')
   );
 
   return onSnapshot(q, (snapshot) => {
-    const notifications = snapshot.docs
-      .map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Notification[];
-    
-    // Filter unread notifications in memory instead
-    const unreadNotifications = notifications.filter(n => !n.read);
-    callback(unreadNotifications);
+    const notifications = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as Notification[];
+    callback(notifications);
   });
 }
 

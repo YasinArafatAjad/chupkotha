@@ -7,11 +7,10 @@ import ImageUpload from './ImageUpload';
 
 interface SignUpFormProps {
   onSubmit: (email: string, password: string, displayName: string, profileImage: File | null) => Promise<void>;
-  onGoogleSignUp: () => Promise<void>;
   loading: boolean;
 }
 
-export default function SignUpForm({ onSubmit, onGoogleSignUp, loading }: SignUpFormProps) {
+export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -145,25 +144,6 @@ export default function SignUpForm({ onSubmit, onGoogleSignUp, loading }: SignUp
             className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors"
           >
             {loading ? <LoadingAnimation /> : 'Create Account'}
-          </button>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300 dark:border-gray-700"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500">Or continue with</span>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={onGoogleSignUp}
-            disabled={loading}
-            className="w-full flex justify-center items-center space-x-2 py-3 px-4 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
-          >
-            <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-            <span>Google</span>
           </button>
         </div>
       </form>

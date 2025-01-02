@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signUpWithEmail, signInWithGoogle } from '../lib/firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 import { uploadProfileImage } from '../lib/firebase/storage';
+import { signInWithGoogle } from '../lib/auth/googleAuth';
 import toast from 'react-hot-toast';
 import SignUpForm from '../components/auth/SignUpForm';
 import WelcomeSection from '../components/auth/WelcomeSection';
@@ -18,14 +20,23 @@ export default function SignUp() {
   ) => {
     setLoading(true);
     try {
-      const user = await signUpWithEmail(email, password, displayName);
-      if (profileImage && user) {
-        const photoURL = await uploadProfileImage(profileImage, user.uid);
-        await user.updateProfile({ photoURL });
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      
+      let photoURL = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}`;
+      
+      if (profileImage) {
+        photoURL = await uploadProfileImage(profileImage, user.uid);
       }
+      
+      await updateProfile(user, {
+        displayName,
+        photoURL
+      });
+
       toast.success('Account created successfully!');
       navigate('/');
     } catch (error: any) {
+      console.error('Signup error:', error);
       toast.error(error.message || 'Failed to create account');
     } finally {
       setLoading(false);
@@ -38,8 +49,8 @@ export default function SignUp() {
       await signInWithGoogle();
       toast.success('Signed in with Google!');
       navigate('/');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to sign in with Google');
+    } catch (error) {
+      // Error is already handled in signInWithGoogle
     } finally {
       setLoading(false);
     }
