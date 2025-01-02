@@ -1,7 +1,7 @@
 {
-  "name": "chupkotha",
+  "name": "social-media-app",
   "private": true,
-  "version": "2.47",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -24,7 +24,6 @@
     "react-hot-toast": "^2.4.1",
     "react-intersection-observer": "^9.8.0",
     "react-lazy-load-image-component": "^1.6.0",
-    "react-lines-ellipsis": "^0.15.4",
     "react-router-dom": "^6.22.1",
     "workbox-cacheable-response": "^7.0.0",
     "workbox-core": "^7.0.0",

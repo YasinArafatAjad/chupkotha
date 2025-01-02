@@ -46,7 +46,7 @@ export default function ChatList({ onSelectChat }: { onSelectChat: (userId: stri
           className="w-full p-4 flex items-center space-x-3 hover:bg-gray-50 dark:hover:bg-gray-800"
         >
           <img
-            src={chat.photoURL || 'https://unsplash.com/photos/a-white-cloud-with-eyes-and-a-black-nose-0LpSeSbtRBw'}
+            src={chat.photoURL || 'https://via.placeholder.com/40'}
             alt={chat.displayName}
             className="w-12 h-12 rounded-full"
           />

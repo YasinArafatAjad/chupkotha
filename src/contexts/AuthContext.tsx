@@ -37,10 +37,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Update immediately when user logs in
     updateUserStatus(currentUser.uid);
 
+<<<<<<< HEAD
     // Update every 10seconds
     const interval = setInterval(() => {
       updateUserStatus(currentUser.uid);
     }, 10000);
+=======
+    // Update every 5 minutes
+    const interval = setInterval(() => {
+      updateUserStatus(currentUser.uid);
+    }, 300000);
+>>>>>>> c988de1180cd1ecf0ce9e4db881888397e5cad28
 
     return () => clearInterval(interval);
   }, [currentUser]);

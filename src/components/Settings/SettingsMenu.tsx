@@ -55,7 +55,18 @@ export default function SettingsMenu() {
               exit={{ opacity: 0, y: 50 }}
               className="absolute bottom-16 right-0 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50"
             >
-              <div className="p-2 space-y-1">                
+              <div className="p-2 space-y-1">
+                <button
+                  onClick={() => {
+                    setShowEditProfile(true);
+                    handleClose();
+                  }}
+                  className="flex items-center space-x-2 w-full p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <User className="w-5 h-5" />
+                  <span>Edit Profile</span>
+                </button>
+
                 <button
                   onClick={() => {
                     navigate('/users');

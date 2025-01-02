@@ -1,4 +1,5 @@
-import {  Settings } from 'lucide-react';
+import { User, Settings } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface ProfileHeaderProps {
   profile: {
@@ -18,7 +19,7 @@ export default function ProfileHeader({ profile, isOwnProfile, onEditProfile }: 
     <div className="p-4 space-y-4">
       <div className="flex items-center space-x-4">
         <img
-          src={profile.photoURL || 'https://plus.unsplash.com/premium_photo-1732333561328-fb8ff00d3665?q=80&w=1347&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
+          src={profile.photoURL || 'https://via.placeholder.com/80'}
           alt={profile.displayName}
           className="w-20 h-20 rounded-full"
         />
@@ -28,7 +29,11 @@ export default function ProfileHeader({ profile, isOwnProfile, onEditProfile }: 
         </div>
       </div>
 
-      <div className="flex justify-around text-center">        
+      <div className="flex justify-around text-center">
+        <div>
+          <div className="font-semibold">{profile.postsCount}</div>
+          <div className="text-sm text-gray-500">Posts</div>
+        </div>
         <div>
           <div className="font-semibold">{profile.followers?.length || 0}</div>
           <div className="text-sm text-gray-500">Followers</div>
