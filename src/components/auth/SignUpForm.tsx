@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera } from "lucide-react";
+// import { Camera } from "lucide-react";
 import { motion } from "framer-motion";
 import LoadingAnimation from "../common/LoadingAnimation";
-import ImageUpload from "./ImageUpload";
-import Logo from "../Layout/Logo";
+// import ImageUpload from "./ImageUpload";
 
 interface SignUpFormProps {
   onSubmit: (
@@ -87,12 +86,12 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
         <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
           Create account
         </h2>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-2 text-sm text-center text-gray-600 dark:text-gray-400">
           Join our community of photographers and creators
         </p>
       </div>
 
-      <ImageUpload imageUrl={imagePreview} onImageChange={setProfileImage} />
+      {/* <ImageUpload imageUrl={imagePreview} onImageChange={setProfileImage} /> */}
 
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-4">
