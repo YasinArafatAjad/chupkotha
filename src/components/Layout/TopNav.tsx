@@ -1,16 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Camera, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
-import { subscribeToUnreadMessages } from '../../lib/firebase/chat/messageService';
+import { useNotifications } from '../../hooks/useNotifications';
+import NotificationDropdown from './NotificationDropdown';
 import toast from 'react-hot-toast';
 
 export default function TopNav() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [showNotifications, setShowNotifications] = useState(false);
   const { currentUser } = useAuth();
+  const notifications = useNotifications();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,20 +25,6 @@ export default function TopNav() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
-
-  useEffect(() => {
-    if (!currentUser) return;
-
-    const unsubscribe = subscribeToUnreadMessages(currentUser.uid, (count) => {
-      setUnreadCount(count);
-      if (count > 0) {
-        const audio = new Audio('/notification.mp3');
-        audio.play().catch(() => {}); // Ignore autoplay restrictions
-      }
-    });
-
-    return () => unsubscribe();
-  }, [currentUser]);
 
   const handleSearchClick = () => {
     navigate('/explore');
@@ -67,18 +55,41 @@ export default function TopNav() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             </button>
 
-            <Link to="/chat" className="relative">
-              <Bell className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-              {unreadCount > 0 && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
-                >
-                  {unreadCount > 99 ? '99+' : unreadCount}
-                </motion.div>
-              )}
-            </Link>
+            <div className="relative">
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
+              >
+                <Bell className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                {notifications.length > 0 && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                  >
+                    {notifications.length > 99 ? '99+' : notifications.length}
+                  </motion.div>
+                )}
+              </button>
+
+              <AnimatePresence>
+                {showNotifications && (
+                  <>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="fixed inset-0 z-40"
+                      onClick={() => setShowNotifications(false)}
+                    />
+                    <NotificationDropdown
+                      notifications={notifications}
+                      onClose={() => setShowNotifications(false)}
+                    />
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </motion.header>
       )}

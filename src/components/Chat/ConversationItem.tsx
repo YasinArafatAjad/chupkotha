@@ -10,6 +10,8 @@ interface ConversationItemProps {
 }
 
 export default function ConversationItem({ conversation, onTogglePin }: ConversationItemProps) {
+  const isUnread = !conversation.lastMessageRead;
+
   return (
     <div className="flex items-center p-4">
       <Link
@@ -23,12 +25,14 @@ export default function ConversationItem({ conversation, onTogglePin }: Conversa
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold truncate">{conversation.displayName}</h3>
+            <h3 className={`truncate ${isUnread ? 'font-bold' : 'font-normal'}`}>
+              {conversation.displayName}
+            </h3>
             <div className="flex items-center space-x-2 ml-2 text-xs text-gray-500">
               {conversation.lastMessageTime && formatDistanceToNow(conversation.lastMessageTime.toDate(), { addSuffix: true })}
             </div>
           </div>
-          <p className="text-sm text-gray-500 truncate">
+          <p className={`text-sm text-gray-500 truncate ${isUnread ? 'font-semibold' : 'font-normal'}`}>
             {conversation.lastMessage || 'No messages yet'}
           </p>
         </div>
