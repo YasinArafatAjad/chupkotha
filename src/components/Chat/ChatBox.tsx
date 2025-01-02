@@ -2,9 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Send, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Message, createChatId } from '../../lib/services/messageService';
-import { markMessageAsRead, sendMessage } from '../../lib/firebase/chat/messageService';
-import MessageList from './MessageList';
+import { ChatMessage, getOrCreateChatRoom, sendMessage, subscribeToMessages, markMessagesAsRead } from '../../lib/services/chatService';
+import { motion, AnimatePresence } from 'framer-motion';
 import LoadingAnimation from '../common/LoadingAnimation';
 import toast from 'react-hot-toast';
 
@@ -15,12 +14,44 @@ interface ChatBoxProps {
 }
 
 export default function ChatBox({ recipientId, recipientName, recipientPhoto }: ChatBoxProps) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [chatRoomId, setChatRoomId] = useState<string | null>(null);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatBoxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const initializeChat = async () => {
+      if (!currentUser || !recipientId) return;
+      
+      try {
+        const roomId = await getOrCreateChatRoom(currentUser.uid, recipientId);
+        setChatRoomId(roomId);
+        
+        // Mark messages as read when chat opens
+        await markMessagesAsRead(roomId, currentUser.uid);
+      } catch (error) {
+        console.error('Error initializing chat:', error);
+        toast.error('Failed to load chat');
+      }
+    };
+
+    initializeChat();
+  }, [currentUser, recipientId]);
+
+  useEffect(() => {
+    if (!chatRoomId) return;
+
+    const unsubscribe = subscribeToMessages(chatRoomId, (newMessages) => {
+      setMessages(newMessages);
+      scrollToBottom();
+    });
+
+    return () => unsubscribe();
+  }, [chatRoomId]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -28,19 +59,17 @@ export default function ChatBox({ recipientId, recipientName, recipientPhoto }: 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentUser || !newMessage.trim()) return;
+    if (!currentUser || !chatRoomId || !newMessage.trim()) return;
 
     setLoading(true);
     try {
-      const chatId = createChatId(currentUser.uid, recipientId);
-      await sendMessage(chatId, {
+      await sendMessage(chatRoomId, {
         text: newMessage.trim(),
-        userId: currentUser.uid,
-        userName: currentUser.displayName || 'Anonymous',
-        userPhoto: currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.displayName || 'Anonymous')}`
+        senderId: currentUser.uid,
+        senderName: currentUser.displayName || 'Anonymous',
+        senderPhoto: currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.displayName || 'Anonymous')}`
       });
       setNewMessage('');
-      scrollToBottom();
     } catch (error) {
       console.error('Error sending message:', error);
       toast.error('Failed to send message');
@@ -50,7 +79,7 @@ export default function ChatBox({ recipientId, recipientName, recipientPhoto }: 
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)]">
+    <div className="flex flex-col h-[calc(100vh-8rem)]" ref={chatBoxRef}>
       <div className="p-4 border-b dark:border-gray-800 flex items-center space-x-4">
         <button 
           onClick={() => navigate('/chat')}
@@ -68,10 +97,40 @@ export default function ChatBox({ recipientId, recipientName, recipientPhoto }: 
         </div>
       </div>
 
-      <MessageList 
-        messages={messages} 
-        currentUserId={currentUser?.uid || ''} 
-      />
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <AnimatePresence>
+          {messages.map((message) => (
+            <motion.div
+              key={message.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className={`flex items-start space-x-2 ${
+                message.senderId === currentUser?.uid ? 'flex-row-reverse space-x-reverse' : ''
+              }`}
+            >
+              <img
+                src={message.senderPhoto}
+                alt={message.senderName}
+                className="w-8 h-8 rounded-full"
+              />
+              <div
+                className={`max-w-[70%] rounded-lg p-3 ${
+                  message.senderId === currentUser?.uid
+                    ? 'bg-primary text-white'
+                    : 'bg-gray-100 dark:bg-gray-800'
+                }`}
+              >
+                <p>{message.text}</p>
+                <div className="text-xs opacity-75 mt-1">
+                  {message.createdAt?.toDate().toLocaleTimeString()}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+        <div ref={messagesEndRef} />
+      </div>
 
       <form onSubmit={handleSubmit} className="p-4 border-t dark:border-gray-800">
         <div className="flex space-x-2">
@@ -87,7 +146,11 @@ export default function ChatBox({ recipientId, recipientName, recipientPhoto }: 
             disabled={loading || !newMessage.trim()}
             className="p-2 rounded-full bg-primary text-white disabled:opacity-50 hover:bg-primary/90 transition-colors"
           >
-            <Send className="w-5 h-5" />
+            {loading ? (
+              <LoadingAnimation />
+            ) : (
+              <Send className="w-5 h-5" />
+            )}
           </button>
         </div>
       </form>

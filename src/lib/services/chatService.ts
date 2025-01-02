@@ -1,108 +1,113 @@
-import { collection, query, where, orderBy, getDocs, limit, doc, getDoc, DocumentData } from 'firebase/firestore';
-import { db } from '../firebase';
+import { collection, query, orderBy, limit, getDocs, addDoc, serverTimestamp, where, doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase/config/firebase';
 
-interface ChatUser {
+export interface ChatMessage {
   id: string;
-  displayName: string;
-  photoURL: string;
+  text: string;
+  senderId: string;
+  senderName: string;
+  senderPhoto: string;
+  createdAt: any;
+  read: boolean;
+}
+
+export interface ChatRoom {
+  id: string;
+  participants: string[];
   lastMessage?: string;
   lastMessageTime?: any;
+  unreadCount: number;
 }
 
-// Helper function to get user data
-async function getUserData(userId: string): Promise<DocumentData | null> {
-  try {
-    const userDoc = await getDoc(doc(db, 'users', userId));
-    return userDoc.exists() ? userDoc.data() : null;
-  } catch (error) {
-    console.error('Error fetching user data:', error);
-    return null;
-  }
-}
+// Create or get existing chat room
+export async function getOrCreateChatRoom(user1Id: string, user2Id: string): Promise<string> {
+  const participants = [user1Id, user2Id].sort();
+  const chatRoomId = `chat_${participants.join('_')}`;
+  
+  const chatRoomRef = doc(db, 'chatRooms', chatRoomId);
+  const chatRoomSnap = await getDocs(query(collection(db, 'chatRooms'), 
+    where('participants', '==', participants)));
 
-export async function getRecentChats(userId: string): Promise<ChatUser[]> {
-  try {
-    // First, get all chat rooms where the user is a participant
-    const chatRoomsRef = collection(db, `users/${userId}/chats`);
-    const q = query(
-      chatRoomsRef,
-      orderBy('lastMessageTime', 'desc'),
-      limit(20)
-    );
-
-    const snapshot = await getDocs(q);
-    
-    // Map chat rooms to user data
-    const chatUsers = await Promise.all(
-      snapshot.docs.map(async (doc) => {
-        const chatData = doc.data();
-        const otherUserId = chatData.userId;
-        const userData = await getUserData(otherUserId);
-
-        return {
-          id: otherUserId,
-          displayName: userData?.displayName || 'Unknown User',
-          photoURL: userData?.photoURL || '',
-          lastMessage: chatData.lastMessage,
-          lastMessageTime: chatData.lastMessageTime
-        };
-      })
-    );
-
-    return chatUsers.filter(user => user.displayName !== 'Unknown User');
-  } catch (error) {
-    console.error('Error getting recent chats:', error);
-    return [];
-  }
-}
-
-export async function searchUsers(searchTerm: string, currentUserId: string): Promise<ChatUser[]> {
-  try {
-    const usersRef = collection(db, 'users');
-    const q = query(
-      usersRef,
-      where('displayName', '>=', searchTerm.toLowerCase()),
-      where('displayName', '<=', searchTerm.toLowerCase() + '\uf8ff'),
-      limit(10)
-    );
-
-    const snapshot = await getDocs(q);
-    return snapshot.docs
-      .map(doc => ({
-        id: doc.id,
-        displayName: doc.data().displayName,
-        photoURL: doc.data().photoURL,
-      }))
-      .filter(user => user.id !== currentUserId);
-  } catch (error) {
-    console.error('Error searching users:', error);
-    return [];
-  }
-}
-
-export async function initializeChat(userId: string, otherUserId: string) {
-  try {
-    // Create chat references for both users
-    const chatId = [userId, otherUserId].sort().join('_');
-    const userChatRef = doc(db, `users/${userId}/chats/${otherUserId}`);
-    const otherUserChatRef = doc(db, `users/${otherUserId}/chats/${userId}`);
-
-    // Initialize chat data
-    const chatData = {
-      userId: otherUserId,
-      lastMessage: '',
-      lastMessageTime: new Date(),
+  if (chatRoomSnap.empty) {
+    await addDoc(collection(db, 'chatRooms'), {
+      participants,
+      createdAt: serverTimestamp(),
+      lastMessageTime: serverTimestamp(),
       unreadCount: 0
-    };
-
-    await Promise.all([
-      setDoc(userChatRef, chatData, { merge: true }),
-      setDoc(otherUserChatRef, { ...chatData, userId }, { merge: true })
-    ]);
-
-    return chatId;
-  } catch (error) {
-    console.error('Error initializing chat:', error);
-    throw error;
+    });
   }
+
+  return chatRoomId;
+}
+
+// Send message
+export async function sendMessage(chatRoomId: string, message: Omit<ChatMessage, 'id' | 'createdAt' | 'read'>): Promise<void> {
+  const messageData = {
+    ...message,
+    createdAt: serverTimestamp(),
+    read: false
+  };
+
+  await addDoc(collection(db, `chatRooms/${chatRoomId}/messages`), messageData);
+  
+  // Update chat room
+  await updateDoc(doc(db, 'chatRooms', chatRoomId), {
+    lastMessage: message.text,
+    lastMessageTime: serverTimestamp(),
+    [`unreadCount.${message.senderId}`]: 0
+  });
+}
+
+// Subscribe to messages
+export function subscribeToMessages(chatRoomId: string, callback: (messages: ChatMessage[]) => void) {
+  const q = query(
+    collection(db, `chatRooms/${chatRoomId}/messages`),
+    orderBy('createdAt', 'desc'),
+    limit(50)
+  );
+
+  return onSnapshot(q, (snapshot) => {
+    const messages = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as ChatMessage[];
+    
+    callback(messages.reverse());
+  });
+}
+
+// Mark messages as read
+export async function markMessagesAsRead(chatRoomId: string, userId: string): Promise<void> {
+  const messagesRef = collection(db, `chatRooms/${chatRoomId}/messages`);
+  const unreadMessages = query(messagesRef, 
+    where('senderId', '!=', userId),
+    where('read', '==', false)
+  );
+
+  const snapshot = await getDocs(unreadMessages);
+  
+  const batch = db.batch();
+  snapshot.docs.forEach(doc => {
+    batch.update(doc.ref, { read: true });
+  });
+
+  await batch.commit();
+
+  // Reset unread count
+  await updateDoc(doc(db, 'chatRooms', chatRoomId), {
+    [`unreadCount.${userId}`]: 0
+  });
+}
+
+// Get chat room details
+export async function getChatRoomDetails(chatRoomId: string): Promise<ChatRoom | null> {
+  const docRef = doc(db, 'chatRooms', chatRoomId);
+  const docSnap = await getDocs(docRef);
+  
+  if (!docSnap.exists()) return null;
+  
+  return {
+    id: docSnap.id,
+    ...docSnap.data()
+  } as ChatRoom;
 }

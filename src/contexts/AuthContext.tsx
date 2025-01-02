@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { updateUserStatus } from '../lib/firebase/users/userStatus';
+import { createOrUpdateUser } from '../lib/firebase/users/userService';
 
 interface AuthContextType {
   currentUser: User | null;
@@ -17,7 +18,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        // Create/update user document when user signs in
+        await createOrUpdateUser(user);
+      }
       setCurrentUser(user);
       setLoading(false);
     });
@@ -27,18 +32,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Update user status periodically
   useEffect(() => {
-    if (currentUser) {
-      // Update immediately when user logs in
+    if (!currentUser) return;
+
+    // Update immediately when user logs in
+    updateUserStatus(currentUser.uid);
+
+    // Update every 5 minutes
+    const interval = setInterval(() => {
       updateUserStatus(currentUser.uid);
+    }, 300000);
 
-      // Update every 5 minutes
-      const interval = setInterval(() => {
-        updateUserStatus(currentUser.uid);
-      }, 300000);
-
-      // Cleanup interval on unmount or user logout
-      return () => clearInterval(interval);
-    }
+    return () => clearInterval(interval);
   }, [currentUser]);
 
   return (

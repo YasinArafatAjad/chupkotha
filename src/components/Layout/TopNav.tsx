@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell } from 'lucide-react';
+import { Search, Camera, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
 import NotificationDropdown from './NotificationDropdown';
 import toast from 'react-hot-toast';
-import Logo from './Logo';
 
 export default function TopNav() {
   const [isVisible, setIsVisible] = useState(true);
@@ -38,14 +37,23 @@ export default function TopNav() {
           initial={{ y: -100 }}
           animate={{ y: 0 }}
           exit={{ y: -100 }}
-          className="overflow-hidden fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 z-50 border-b dark:border-gray-800"
+          className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 z-50 border-b dark:border-gray-800"
         >
           <div className="container mx-auto px-4 h-14 flex items-center justify-between">
-            <Link to="/" className="flex items-center ">
-            {/* ========| LOGO |======== */}
-              <Logo />
+            <Link to="/" className="flex items-center space-x-2">
+              <Camera className="w-6 h-6 text-primary" />
+              <span className="text-xl font-bold">ChupKotha</span>
             </Link>
             
+            <button
+              onClick={handleSearchClick}
+              className="relative w-full max-w-xs mx-4"
+            >
+              <div className="w-full pl-10 pr-4 py-1 rounded-full bg-gray-100 dark:bg-gray-800 cursor-pointer">
+                Search...
+              </div>
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            </button>
 
             <div className="relative">
               <button
