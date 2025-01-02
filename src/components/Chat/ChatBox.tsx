@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Send, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Message, createChatId } from '../../lib/services/messageService';
+import { markMessageAsRead } from '../../lib/firebase/chat/messageService';
 import MessageList from './MessageList';
 import LoadingAnimation from '../common/LoadingAnimation';
 import toast from 'react-hot-toast';
@@ -37,6 +38,14 @@ export default function ChatBox({ recipientId, recipientName, recipientPhoto }: 
         id: doc.id,
         ...doc.data()
       })) as Message[];
+
+      // Mark messages as read
+      newMessages.forEach(msg => {
+        if (msg.recipientId === currentUser.uid && !msg.read) {
+          markMessageAsRead(msg.id);
+        }
+      });
+
       setMessages(newMessages);
       setLoading(false);
       scrollToBottom();
@@ -62,9 +71,11 @@ export default function ChatBox({ recipientId, recipientName, recipientPhoto }: 
       await addDoc(collection(db, `chats/${chatId}/messages`), {
         text: newMessage.trim(),
         userId: currentUser.uid,
+        recipientId,
         userName: currentUser.displayName,
         userPhoto: currentUser.photoURL,
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
+        read: false
       });
       setNewMessage('');
     } catch (error) {

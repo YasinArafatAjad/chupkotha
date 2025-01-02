@@ -2,15 +2,14 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Camera, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
+import { subscribeToUnreadMessages } from '../../lib/firebase/chat/messageService';
 import toast from 'react-hot-toast';
 
 export default function TopNav() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [unreadMessages, setUnreadMessages] = useState(0);
+  const [unreadCount, setUnreadCount] = useState(0);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
@@ -28,17 +27,11 @@ export default function TopNav() {
   useEffect(() => {
     if (!currentUser) return;
 
-    const q = query(
-      collection(db, 'messages'),
-      where('recipientId', '==', currentUser.uid),
-      where('read', '==', false)
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setUnreadMessages(snapshot.size);
-      if (snapshot.docChanges().some(change => change.type === 'added')) {
-        const latestMessage = snapshot.docChanges()[0].doc.data();
-        toast.success(`New message from ${latestMessage.senderName}`);
+    const unsubscribe = subscribeToUnreadMessages(currentUser.uid, (count) => {
+      setUnreadCount(count);
+      if (count > 0) {
+        const audio = new Audio('/notification.mp3');
+        audio.play().catch(() => {}); // Ignore autoplay restrictions
       }
     });
 
@@ -74,16 +67,18 @@ export default function TopNav() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             </button>
 
-            <div className="relative">
-              <Link to="/chat" className="relative">
-                <Bell className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-                {unreadMessages > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                    {unreadMessages}
-                  </span>
-                )}
-              </Link>
-            </div>
+            <Link to="/chat" className="relative">
+              <Bell className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+              {unreadCount > 0 && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                >
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </motion.div>
+              )}
+            </Link>
           </div>
         </motion.header>
       )}
