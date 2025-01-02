@@ -83,16 +83,17 @@ export default function CreatePost() {
               </button>
             </>
           ) : (
-            <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-              <Camera className="w-12 h-12 text-gray-400" />
-              <span className="mt-2 text-sm text-gray-500">Choose a photo</span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-              />
-            </label>
+            ''
+            // <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+            //   <Camera className="w-12 h-12 text-gray-400" />
+            //   <span className="mt-2 text-sm text-gray-500">Choose a photo</span>
+            //   <input
+            //     type="file"
+            //     accept="image/*"
+            //     onChange={handleImageChange}
+            //     className="hidden"
+            //   />
+            // </label>
           )}
         </div>
 
