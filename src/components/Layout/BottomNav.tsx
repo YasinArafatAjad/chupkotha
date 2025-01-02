@@ -3,6 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { Home, Search, PlusSquare, MessageCircle, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
+import { useUnreadMessages } from '../../hooks/useUnreadMessages';
+import UnreadBadge from '../Chat/UnreadBadge';
 import SettingsMenu from '../Settings/SettingsMenu';
 
 export default function BottomNav() {
@@ -10,6 +12,7 @@ export default function BottomNav() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const location = useLocation();
   const { currentUser } = useAuth();
+  const unreadCount = useUnreadMessages(currentUser?.uid);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,8 +47,12 @@ export default function BottomNav() {
               <Link to="/create" className="text-primary">
                 <PlusSquare className="w-6 h-6" />
               </Link>
-              <Link to="/chat" className={`${isActive('/chat') ? 'text-primary' : 'text-gray-500'}`}>
+              <Link 
+                to="/chat" 
+                className={`relative ${isActive('/chat') ? 'text-primary' : 'text-gray-500'}`}
+              >
                 <MessageCircle className="w-6 h-6" />
+                <UnreadBadge count={unreadCount} />
               </Link>
               <Link 
                 to={`/profile/${currentUser?.uid}`} 
