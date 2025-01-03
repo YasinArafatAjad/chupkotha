@@ -15,7 +15,8 @@ export function useCreatePost() {
     image: File | null,
     caption: string,
     userName: string,
-    userPhoto: string
+    userPhoto: string,
+    isPublic: boolean = true
   ) => {
     setLoading(true);
     try {
@@ -23,7 +24,7 @@ export function useCreatePost() {
         validateImageFile(image);
       }
 
-      await createPost(userId, image, caption, userName, userPhoto);
+      await createPost(userId, image, caption, userName, userPhoto, isPublic);
       await refreshData();
       toast.success('Post created successfully!');
       navigate('/');

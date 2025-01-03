@@ -1,7 +1,8 @@
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { db } from '../';
 import { uploadPostImage } from '../storage/imageUpload';
 import { validatePostInput } from './validators';
+import { createPostData } from './utils';
 import toast from 'react-hot-toast';
 
 export async function createPost(
@@ -9,7 +10,8 @@ export async function createPost(
   image: File | null,
   caption: string,
   userName: string,
-  userPhoto: string
+  userPhoto: string,
+  isPublic: boolean = true
 ) {
   try {
     validatePostInput(image, caption);
@@ -19,17 +21,14 @@ export async function createPost(
       imageUrl = await uploadPostImage(image, userId);
     }
 
-    const postData = {
+    const postData = createPostData({
       userId,
       userName,
       userPhoto,
       imageUrl,
       caption,
-      captionLower: caption.toLowerCase(),
-      likes: [],
-      comments: [],
-      createdAt: serverTimestamp()
-    };
+      isPublic
+    });
 
     const docRef = await addDoc(collection(db, 'posts'), postData);
     return { id: docRef.id, ...postData };
