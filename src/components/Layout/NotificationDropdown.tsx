@@ -48,9 +48,9 @@ export default function NotificationDropdown({ notifications, onClose }: Notific
             </p>
           </div>
           {notification.type === 'like' ? (
-            <Heart className="w-5 h-5 text-red-500" fill="currentColor" />
+            <Heart className="w-5 h-5 -mt-2 text-red-500" fill="currentColor" />
           ) : (
-            <MessageCircle className="w-5 h-5 text-primary" />
+            <MessageCircle className="w-5 h-5 -mt-2 text-primary" />
           )}
         </Link>
       ))}

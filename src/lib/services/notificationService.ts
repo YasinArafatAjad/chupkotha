@@ -1,4 +1,15 @@
-import { collection, query, where, orderBy, limit, onSnapshot, addDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
+import { 
+  collection, 
+  query, 
+  where, 
+  orderBy, 
+  limit, 
+  onSnapshot, 
+  addDoc, 
+  getDocs,
+  writeBatch,
+  serverTimestamp 
+} from 'firebase/firestore';
 import { db } from '../firebase/config/firebase';
 
 export interface Notification {
@@ -41,39 +52,29 @@ export async function createNotification(
   postId: string,
   sender: SenderInfo
 ) {
-  try {
-    const notificationsRef = collection(db, `users/${recipientId}/notifications`);
-    
-    await addDoc(notificationsRef, {
-      type,
-      postId,
-      senderName: sender.name,
-      senderPhoto: sender.photo,
-      senderId: sender.id,
-      read: false,
-      createdAt: serverTimestamp()
-    });
-  } catch (error) {
-    console.error('Error creating notification:', error);
-    throw error;
-  }
+  const notificationsRef = collection(db, `users/${recipientId}/notifications`);
+  
+  await addDoc(notificationsRef, {
+    type,
+    postId,
+    senderName: sender.name,
+    senderPhoto: sender.photo,
+    senderId: sender.id,
+    read: false,
+    createdAt: serverTimestamp()
+  });
 }
 
 export async function markNotificationsAsRead(userId: string) {
   const notificationsRef = collection(db, `users/${userId}/notifications`);
   const unreadQuery = query(notificationsRef, where('read', '==', false));
   
-  try {
-    const snapshot = await getDocs(unreadQuery);
-    const batch = writeBatch(db);
-    
-    snapshot.docs.forEach(doc => {
-      batch.update(doc.ref, { read: true });
-    });
-    
-    await batch.commit();
-  } catch (error) {
-    console.error('Error marking notifications as read:', error);
-    throw error;
-  }
+  const snapshot = await getDocs(unreadQuery);
+  const batch = writeBatch(db);
+  
+  snapshot.docs.forEach(doc => {
+    batch.update(doc.ref, { read: true });
+  });
+  
+  await batch.commit();
 }
