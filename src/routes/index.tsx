@@ -10,6 +10,7 @@ import Chat from '../pages/Chat';
 import Post from '../pages/Post';
 import Create from '../pages/Create';
 import Users from '../pages/Users';
+import AccountSettings from '../pages/AccountSettings';
 import DirectChat from '../components/Chat/DirectChat';
 import ProtectedRoute from './ProtectedRoute';
 
@@ -31,6 +32,7 @@ export default function AppRoutes() {
           <Route path="/chat" element={<Chat />} />
           <Route path="/chat/:userId" element={<DirectChat />} />
           <Route path="/post/:postId" element={<Post />} />
+          <Route path="/settings/account" element={<AccountSettings />} />
         </Route>
       </Route>
     </Routes>
