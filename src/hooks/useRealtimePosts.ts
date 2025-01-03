@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { collection, query, where, orderBy, limit, onSnapshot } from 'firebase/firestore';
-import { db } from '../lib/firebase/config/firebase';
+import { db } from '../lib/firebase';
 import { Post } from '../lib/types';
 import toast from 'react-hot-toast';
 
@@ -12,8 +12,8 @@ export function useRealtimePosts(limitCount: number = 20) {
     // Create query that only gets public posts
     const q = query(
       collection(db, 'posts'),
-      where('isPublic', '!=', false), // This will include both true and undefined values
-      orderBy('isPublic'), // Required for the compound query to work
+      where('isPublic', '!=', false),
+      orderBy('isPublic'),
       orderBy('createdAt', 'desc'),
       limit(limitCount)
     );
@@ -29,7 +29,7 @@ export function useRealtimePosts(limitCount: number = 20) {
       },
       (error) => {
         console.error('Error fetching posts:', error);
-        toast.error('Failed to load posts');
+        toast.error('Failed to load live posts');
         setLoading(false);
       }
     );
