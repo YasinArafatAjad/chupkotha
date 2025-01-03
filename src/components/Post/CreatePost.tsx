@@ -1,5 +1,5 @@
 import { useState } from 'react';
-// import { Camera, X } from 'lucide-react';
+// import { import { Camera, X } from 'lucide-react'; } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCreatePost } from '../../hooks/useCreatePost';
