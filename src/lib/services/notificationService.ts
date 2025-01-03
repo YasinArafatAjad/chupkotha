@@ -1,9 +1,9 @@
-import { collection, query, where, orderBy, onSnapshot, Timestamp, updateDoc, doc } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase/config/firebase';
 
 export interface Notification {
   id: string;
-  type: 'like' | 'comment';
+  type: 'like' | 'comment' | 'share';
   postId: string;
   senderId: string;
   senderName: string;
@@ -28,7 +28,21 @@ export function subscribeToNotifications(userId: string, callback: (notification
   });
 }
 
-export async function markNotificationAsRead(userId: string, notificationId: string) {
-  const notificationRef = doc(db, `users/${userId}/notifications/${notificationId}`);
-  await updateDoc(notificationRef, { read: true });
+export async function createNotification(
+  recipientId: string,
+  type: 'like' | 'comment' | 'share',
+  postId: string,
+  sender: { id: string; name: string; photo: string }
+) {
+  const notificationData = {
+    type,
+    postId,
+    senderId: sender.id,
+    senderName: sender.name,
+    senderPhoto: sender.photo,
+    read: false,
+    createdAt: serverTimestamp()
+  };
+
+  await addDoc(collection(db, `users/${recipientId}/notifications`), notificationData);
 }

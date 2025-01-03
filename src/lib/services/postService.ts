@@ -1,45 +1,49 @@
-```typescript
-import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import { collection, doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { db } from '../firebase/config/firebase';
-import { Post } from '../types';
-import postsData from '../../components/preReady_post/posts.json';
+import { createNotification } from './notificationService';
+import toast from 'react-hot-toast';
 
-export async function fetchLivePosts(): Promise<Post[]> {
-  try {
-    const q = query(
-      collection(db, 'posts'),
-      orderBy('createdAt', 'desc'),
-      limit(20)
-    );
-    
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as Post[];
-  } catch (error) {
-    console.error('Error fetching live posts:', error);
-    return [];
+export class PostService {
+  static async toggleLike(postId: string, userId: string): Promise<boolean> {
+    try {
+      const postRef = doc(db, 'posts', postId);
+      const postDoc = await getDoc(postRef);
+
+      if (!postDoc.exists()) {
+        toast.error('Post not found');
+        return false;
+      }
+
+      const postData = postDoc.data();
+      const likes: string[] = postData?.likes || [];
+      const isLiked = likes.includes(userId);
+
+      await updateDoc(postRef, {
+        likes: isLiked ? arrayRemove(userId) : arrayUnion(userId)
+      });
+
+      // Create notification for like
+      if (!isLiked && userId !== postData.userId) {
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        const userData = userDoc.data();
+
+        await createNotification(
+          postData.userId,
+          'like',
+          postId,
+          {
+            id: userId,
+            name: userData?.displayName || 'Anonymous',
+            photo: userData?.photoURL || `https://ui-avatars.com/api/?name=Anonymous`
+          }
+        );
+      }
+
+      return !isLiked;
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      toast.error('Failed to update like');
+      return false;
+    }
   }
 }
-
-export function getLocalPosts(): Post[] {
-  return postsData.posts;
-}
-
-export async function getAllPosts(): Promise<Post[]> {
-  const [livePosts, localPosts] = await Promise.all([
-    fetchLivePosts(),
-    Promise.resolve(getLocalPosts())
-  ]);
-
-  const combinedPosts = [...livePosts, ...localPosts];
-  
-  // Sort by createdAt in descending order
-  return combinedPosts.sort((a, b) => {
-    const dateA = a.createdAt?.toDate?.() || new Date(a.createdAt);
-    const dateB = b.createdAt?.toDate?.() || new Date(b.createdAt);
-    return dateB.getTime() - dateA.getTime();
-  });
-}
-```
