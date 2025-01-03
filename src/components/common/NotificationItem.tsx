@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
-import { Heart, MessageCircle, Share2 } from 'lucide-react';
+import { Heart, MessageCircle, Share2, UserPlus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Notification } from '../../lib/services/notificationService';
 
@@ -18,6 +18,10 @@ export default function NotificationItem({ notification, onClose }: Notification
         return <MessageCircle className="w-5 h-5 text-primary" />;
       case 'share':
         return <Share2 className="w-5 h-5 text-green-500" />;
+      case 'follow':
+        return <UserPlus className="w-5 h-5 text-blue-500" />;
+      default:
+        return null;
     }
   };
 
@@ -29,12 +33,23 @@ export default function NotificationItem({ notification, onClose }: Notification
         return 'commented on your post';
       case 'share':
         return 'shared your post';
+      case 'follow':
+        return 'started following you';
+      default:
+        return '';
     }
+  };
+
+  const getLink = () => {
+    if (notification.type === 'follow') {
+      return `/profile/${notification.senderId}`;
+    }
+    return `/post/${notification.postId}`;
   };
 
   return (
     <Link
-      to={`/post/${notification.postId}`}
+      to={getLink()}
       onClick={onClose}
       className="flex items-center p-4 hover:bg-gray-50 dark:hover:bg-gray-700 border-b dark:border-gray-700 last:border-0"
     >
