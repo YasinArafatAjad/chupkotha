@@ -1,6 +1,6 @@
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../';
-import { uploadPostImage } from '../storage/imageUpload';
+import { uploadToCloudinary } from '../../cloudinary';
 import { validatePostInput } from './validators';
 import { createPostData } from './utils';
 import toast from 'react-hot-toast';
@@ -18,7 +18,7 @@ export async function createPost(
 
     let imageUrl = '';
     if (image) {
-      imageUrl = await uploadPostImage(image, userId);
+      imageUrl = await uploadToCloudinary(image);
     }
 
     const postData = createPostData({
