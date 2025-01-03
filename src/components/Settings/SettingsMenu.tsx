@@ -7,16 +7,19 @@ import {
   Sun,
   User,
   Settings as SettingsIcon,
+  UserCog,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import { auth } from "../../lib/firebase";
 import toast from "react-hot-toast";
 import EditProfileModal from "../Profile/EditProfileModal";
+import AccountSettings from "./AccountSettings";
 
 export default function SettingsMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showAccountSettings, setShowAccountSettings] = useState(false);
   const { currentUser } = useAuth();
   const { isDarkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -34,6 +37,7 @@ export default function SettingsMenu() {
 
   const handleClose = () => {
     setIsOpen(false);
+    setShowAccountSettings(false);
   };
 
   return (
@@ -61,41 +65,55 @@ export default function SettingsMenu() {
               exit={{ opacity: 0, y: 50 }}
               className="absolute bottom-16 right-0 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50"
             >
-              <div className="p-2 space-y-1">
-                <button
-                  onClick={() => {
-                    navigate("/users");
-                    handleClose();
-                  }}
-                  className="flex items-center space-x-2 w-full p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  <User className="w-5 h-5" />
-                  <span>View All Users</span>
-                </button>
+              {showAccountSettings ? (
+                <AccountSettings onClose={handleClose} />
+              ) : (
+                <div className="p-2 space-y-1">
+                  <button
+                    onClick={() => {
+                      navigate("/users");
+                      handleClose();
+                    }}
+                    className="flex items-center space-x-2 w-full p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    <User className="w-5 h-5" />
+                    <span>View All Users</span>
+                  </button>
 
-                <button
-                  onClick={() => {
-                    toggleTheme();
-                    handleClose();
-                  }}
-                  className="flex items-center space-x-2 w-full p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  {isDarkMode ? (
-                    <Sun className="w-5 h-5" />
-                  ) : (
-                    <Moon className="w-5 h-5" />
-                  )}
-                  <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
-                </button>
+                  <button
+                    onClick={() => {
+                      setShowAccountSettings(true);
+                    }}
+                    className="flex items-center space-x-2 w-full p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    <UserCog className="w-5 h-5" />
+                    <span>Account Settings</span>
+                  </button>
 
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center space-x-2 w-full p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
-                >
-                  <LogOut className="w-5 h-5" />
-                  <span>Logout</span>
-                </button>
-              </div>
+                  <button
+                    onClick={() => {
+                      toggleTheme();
+                      handleClose();
+                    }}
+                    className="flex items-center space-x-2 w-full p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    {isDarkMode ? (
+                      <Sun className="w-5 h-5" />
+                    ) : (
+                      <Moon className="w-5 h-5" />
+                    )}
+                    <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
+                  </button>
+
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center space-x-2 w-full p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              )}
             </motion.div>
           </>
         )}
