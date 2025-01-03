@@ -3,7 +3,7 @@ import { format, isValid, parseISO } from 'date-fns';
 /**
  * Safely formats a date with a fallback value
  */
-export function formatDate(date: unknown, formatStr: string = 'MMM d, yyyy • HH:mm'): string {
+export function formatDate(date: unknown, formatStr: string = 'MMM d, yyyy • hh:mm a'): string {
   try {
     if (!date) {
       return 'No date';
@@ -41,12 +41,12 @@ export function formatDate(date: unknown, formatStr: string = 'MMM d, yyyy • H
  * Formats a post date consistently across the app
  */
 export function formatPostDate(date: unknown): string {
-  return formatDate(date, 'MMM d, yyyy • HH:mm');
+  return formatDate(date, 'MMM d, yyyy • hh:mm a');
 }
 
 /**
  * Formats a chat message date
  */
 export function formatMessageDate(date: unknown): string {
-  return formatDate(date, 'HH:mm');
+  return formatDate(date, 'hh:mm a');
 }

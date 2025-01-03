@@ -74,7 +74,7 @@ export default function Profile() {
     }
   };
 
-  if (loading || postsLoading) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <LoadingAnimation />
@@ -111,7 +111,11 @@ export default function Profile() {
         onFollow={handleFollow}
         onEditProfile={() => setShowEditProfile(true)}
       />
-      <ProfilePosts userId={userId!} posts={posts} />
+      <ProfilePosts 
+        userId={userId!} 
+        posts={posts} 
+        loading={postsLoading} 
+      />
       <EditProfileModal
         isOpen={showEditProfile}
         onClose={() => setShowEditProfile(false)}
