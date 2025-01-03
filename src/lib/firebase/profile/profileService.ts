@@ -2,11 +2,13 @@ import { User, updateProfile } from 'firebase/auth';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { uploadToCloudinary } from '../../cloudinary';
+import { validateProfileData } from './validators';
 import toast from 'react-hot-toast';
 
 interface ProfileUpdate {
   displayName: string;
   bio: string;
+  website: string;
   photoURL?: string;
 }
 
@@ -32,6 +34,9 @@ export async function updateUserProfile(
   newImage: File | null
 ): Promise<boolean> {
   try {
+    // Validate profile data
+    validateProfileData(data);
+
     let photoURL = user.photoURL;
 
     if (newImage) {
@@ -48,8 +53,10 @@ export async function updateUserProfile(
     const userRef = doc(db, 'users', user.uid);
     await updateDoc(userRef, {
       displayName: data.displayName,
+      displayNameLower: data.displayName.toLowerCase(),
       photoURL,
       bio: data.bio,
+      website: data.website,
       updatedAt: new Date().toISOString()
     });
 

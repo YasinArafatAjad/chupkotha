@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Camera, Loader } from 'lucide-react';
+import { X, Camera, Loader, Globe } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useProfileUpdate } from '../../hooks/useProfileUpdate';
 import { getUserProfile } from '../../lib/firebase/profile/profileService';
@@ -16,6 +16,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
   const { updateProfile, loading, error } = useProfileUpdate();
   const [displayName, setDisplayName] = useState(currentUser?.displayName || '');
   const [bio, setBio] = useState('');
+  const [website, setWebsite] = useState('');
   const [newImage, setNewImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -27,6 +28,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
           if (profile) {
             setDisplayName(profile.displayName || '');
             setBio(profile.bio || '');
+            setWebsite(profile.website || '');
             setImagePreview(profile.photoURL || null);
           }
         } catch (error) {
@@ -61,6 +63,16 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     }
   };
 
+  const validateWebsite = (url: string): boolean => {
+    if (!url) return true; // Empty URL is valid
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!displayName.trim()) {
@@ -68,7 +80,12 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
       return;
     }
 
-    const success = await updateProfile(displayName, bio, newImage);
+    if (!validateWebsite(website)) {
+      toast.error('Please enter a valid website URL');
+      return;
+    }
+
+    const success = await updateProfile(displayName, bio, website, newImage);
     if (success) {
       onClose();
       // Reset form
@@ -155,6 +172,22 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                   maxLength={150}
                   placeholder="Tell us about yourself..."
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Website
+                </label>
+                <div className="relative">
+                  <input
+                    type="url"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                    className="w-full pl-10 pr-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="https://example.com"
+                  />
+                  <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                </div>
               </div>
 
               {error && (

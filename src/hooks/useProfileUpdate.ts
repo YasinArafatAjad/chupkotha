@@ -11,6 +11,7 @@ export function useProfileUpdate() {
   const updateProfile = async (
     displayName: string,
     bio: string,
+    website: string,
     newImage: File | null
   ) => {
     if (!currentUser) {
@@ -22,7 +23,7 @@ export function useProfileUpdate() {
     setError(null);
 
     try {
-      await updateUserProfile(currentUser, { displayName, bio }, newImage);
+      await updateUserProfile(currentUser, { displayName, bio, website }, newImage);
       return true;
     } catch (error: any) {
       setError(error.message);
