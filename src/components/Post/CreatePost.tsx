@@ -75,19 +75,6 @@ export default function CreatePost() {
       className="max-w-xl mx-auto p-4"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <ImageUploadPreview
-          preview={preview}
-          onImageChange={handleImageChange}
-          onRemoveImage={handleRemoveImage}
-        />
-
-        <textarea
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          placeholder="Write a caption..."
-          className="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-          rows={3}
-        />
 
         <div className="flex items-center space-x-4">
           <button
@@ -116,6 +103,20 @@ export default function CreatePost() {
           </button>
         </div>
 
+        <ImageUploadPreview
+          preview={preview}
+          onImageChange={handleImageChange}
+          onRemoveImage={handleRemoveImage}
+        />
+
+        <textarea
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+          placeholder="Write a caption..."
+          className="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+          rows={3}
+        />
+      
         <button
           type="submit"
           disabled={loading || (!caption.trim() && !image)}
