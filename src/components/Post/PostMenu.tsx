@@ -1,20 +1,23 @@
 import { useState } from 'react';
-import { MoreHorizontal, ExternalLink, Flag, Link as LinkIcon, Trash2 } from 'lucide-react';
+import { MoreHorizontal, ExternalLink, Flag, Link as LinkIcon, Trash2, PencilLine } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import DeletePostModal from './DeletePostModal';
+import EditCaptionModal from './EditCaptionModal';
 import toast from 'react-hot-toast';
 
 interface PostMenuProps {
   postId: string;
   userId: string;
+  caption: string;
   onReport?: () => void;
 }
 
-export default function PostMenu({ postId, userId, onReport }: PostMenuProps) {
+export default function PostMenu({ postId, userId, caption, onReport }: PostMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
@@ -80,16 +83,29 @@ export default function PostMenu({ postId, userId, onReport }: PostMenuProps) {
               </button>
 
               {currentUser?.uid === userId && (
-                <button
-                  onClick={() => {
-                    setShowDeleteModal(true);
-                    setIsOpen(false);
-                  }}
-                  className="w-full px-4 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  <span>Delete post</span>
-                </button>
+                <>
+                  <button
+                    onClick={() => {
+                      setShowEditModal(true);
+                      setIsOpen(false);
+                    }}
+                    className="w-full px-4 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    <PencilLine className="w-4 h-4" />
+                    <span>Edit caption</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setShowDeleteModal(true);
+                      setIsOpen(false);
+                    }}
+                    className="w-full px-4 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>Delete post</span>
+                  </button>
+                </>
               )}
 
               <button
@@ -108,6 +124,13 @@ export default function PostMenu({ postId, userId, onReport }: PostMenuProps) {
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         postId={postId}
+      />
+
+      <EditCaptionModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        postId={postId}
+        currentCaption={caption}
       />
     </div>
   );
