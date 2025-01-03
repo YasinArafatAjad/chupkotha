@@ -1,26 +1,24 @@
 import { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { deleteUserAccount } from '../../lib/services/accountService';
+import { useAccountDeletion } from '../../hooks/useAccountDeletion';
 import DeleteAccountModal from './DeleteAccountModal';
 import toast from 'react-hot-toast';
 
 export default function DangerZone() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { currentUser } = useAuth();
-  const navigate = useNavigate();
+  const { deleting, handleDeleteAccount } = useAccountDeletion();
 
-  const handleDeleteAccount = async () => {
-    if (!currentUser) return;
-    
-    try {
-      await deleteUserAccount(currentUser.uid);
-      toast.success('Account deleted successfully');
-      navigate('/login');
-    } catch (error) {
-      console.error('Error deleting account:', error);
-      toast.error('Failed to delete account');
+  const handleConfirmDelete = async () => {
+    if (!currentUser) {
+      toast.error('You must be logged in to delete your account');
+      return;
+    }
+
+    const success = await handleDeleteAccount(currentUser.uid);
+    if (!success) {
+      setShowDeleteModal(false);
     }
   };
 
@@ -37,15 +35,16 @@ export default function DangerZone() {
 
       <button
         onClick={() => setShowDeleteModal(true)}
-        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+        disabled={deleting}
+        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
       >
-        Delete Account
+        {deleting ? 'Deleting...' : 'Delete Account'}
       </button>
 
       <DeleteAccountModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        onConfirm={handleDeleteAccount}
+        onConfirm={handleConfirmDelete}
       />
     </section>
   );

@@ -10,6 +10,15 @@ interface DeleteAccountModalProps {
 export default function DeleteAccountModal({ isOpen, onClose, onConfirm }: DeleteAccountModalProps) {
   if (!isOpen) return null;
 
+  const handleConfirm = async () => {
+    try {
+      await onConfirm();
+    } catch (error) {
+      // Error is handled in parent component
+      onClose();
+    }
+  };
+
   return (
     <AnimatePresence>
       <motion.div
@@ -56,7 +65,7 @@ export default function DeleteAccountModal({ isOpen, onClose, onConfirm }: Delet
                 Cancel
               </button>
               <button
-                onClick={onConfirm}
+                onClick={handleConfirm}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
               >
                 Yes, delete my account
