@@ -1,11 +1,14 @@
-import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase/config/firebase';
 import { Post } from '../../types';
+import { handleFirestoreError } from '../../firebase/errors/handleFirestoreError';
 
 export async function fetchLivePosts(): Promise<Post[]> {
   try {
+    // Create query with index-supported structure
     const q = query(
       collection(db, 'posts'),
+      where('isPublic', '==', true),
       orderBy('createdAt', 'desc'),
       limit(20)
     );
@@ -16,7 +19,7 @@ export async function fetchLivePosts(): Promise<Post[]> {
       ...doc.data()
     })) as Post[];
   } catch (error) {
-    console.error('Error fetching live posts:', error);
+    handleFirestoreError(error);
     return [];
   }
 }
