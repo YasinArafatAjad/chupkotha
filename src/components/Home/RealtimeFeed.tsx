@@ -10,9 +10,12 @@ export default function RealtimeFeed() {
     return <LoadingAnimation />;
   }
 
+  // Filter out private posts
+  const publicPosts = posts.filter(post => post.isPublic !== false);
+
   return (
     <AnimatePresence mode="popLayout">
-      {posts.map((post) => (
+      {publicPosts.map((post) => (
         <motion.div
           key={post.id}
           initial={{ opacity: 0, y: 20 }}
@@ -23,6 +26,11 @@ export default function RealtimeFeed() {
           <PostCard post={post} />
         </motion.div>
       ))}
+      {publicPosts.length === 0 && (
+        <div className="text-center py-8">
+          <p className="text-gray-500 dark:text-gray-400">No posts to show</p>
+        </div>
+      )}
     </AnimatePresence>
   );
 }

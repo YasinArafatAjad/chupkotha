@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase/config/firebase';
 import { Post } from '../lib/types';
 import toast from 'react-hot-toast';
@@ -9,8 +9,11 @@ export function useRealtimePosts(limitCount: number = 20) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Create query that only gets public posts
     const q = query(
       collection(db, 'posts'),
+      where('isPublic', '!=', false), // This will include both true and undefined values
+      orderBy('isPublic'), // Required for the compound query to work
       orderBy('createdAt', 'desc'),
       limit(limitCount)
     );
