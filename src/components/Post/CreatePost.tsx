@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-// import { import { Camera, X } from 'lucide-react'; } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Globe, Lock } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
