@@ -9,7 +9,6 @@ import {
   getDocs,
   writeBatch,
   serverTimestamp,
-  updateDoc,
   doc 
 } from 'firebase/firestore';
 import { db } from '../firebase/config/firebase';
@@ -31,6 +30,7 @@ interface SenderInfo {
 }
 
 export function subscribeToNotifications(userId: string, callback: (notifications: Notification[]) => void) {
+  // Get all notifications but only count unread ones
   const q = query(
     collection(db, `users/${userId}/notifications`),
     orderBy('createdAt', 'desc'),
@@ -38,14 +38,14 @@ export function subscribeToNotifications(userId: string, callback: (notification
   );
 
   return onSnapshot(q, (snapshot) => {
-    const notifications = snapshot.docs.map(doc => ({
+    const allNotifications = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     })) as Notification[];
     
-    // Only count unread notifications
-    const unreadNotifications = notifications.filter(n => !n.read);
-    callback(unreadNotifications);
+    // Filter unread for counter but return all notifications
+    const unreadCount = allNotifications.filter(n => !n.read).length;
+    callback(unreadCount > 0 ? allNotifications : []);
   });
 }
 
@@ -76,7 +76,7 @@ export async function markNotificationsAsRead(userId: string) {
   const batch = writeBatch(db);
   
   snapshot.docs.forEach(docRef => {
-    // Update read status but keep the notification
+    // Only update read status
     batch.update(doc(db, `users/${userId}/notifications/${docRef.id}`), { 
       read: true 
     });
