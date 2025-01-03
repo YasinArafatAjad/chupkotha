@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Clock, Globe, Lock } from 'lucide-react';
 import PostMenu from './PostMenu';
-import { formatPostTime } from '../../lib/utils/dateFormat';
+import { formatPostDate } from '../../lib/utils/date/formatters';
 
 interface PostHeaderProps {
   userId: string;
@@ -35,7 +35,7 @@ export default function PostHeader({
             <span className="font-semibold">{userName}</span>
             <div className="flex items-center space-x-2 text-sm text-gray-500">
               <Clock className="w-4 h-4" />
-              <span>{formatPostTime(createdAt)}</span>
+              <span>{formatPostDate(createdAt)}</span>
               {isPublic ? (
                 <Globe className="w-4 h-4" />
               ) : (
