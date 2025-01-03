@@ -3,20 +3,19 @@ import { MoreHorizontal, ExternalLink, Flag, Link as LinkIcon, Trash2 } from 'lu
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { usePostDeletion } from '../../hooks/usePostDeletion';
+import DeletePostModal from './DeletePostModal';
 import toast from 'react-hot-toast';
 
 interface PostMenuProps {
   postId: string;
-  imageUrl?: string;
   userId: string;
   onReport?: () => void;
 }
 
-export default function PostMenu({ postId, imageUrl, userId, onReport }: PostMenuProps) {
+export default function PostMenu({ postId, userId, onReport }: PostMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { currentUser } = useAuth();
-  const { handleDelete, isDeleting } = usePostDeletion();
   const navigate = useNavigate();
 
   const handleCopyLink = async () => {
@@ -82,15 +81,14 @@ export default function PostMenu({ postId, imageUrl, userId, onReport }: PostMen
 
               {currentUser?.uid === userId && (
                 <button
-                  onClick={async () => {
-                    const success = await handleDelete(postId, imageUrl);
-                    if (success) setIsOpen(false);
+                  onClick={() => {
+                    setShowDeleteModal(true);
+                    setIsOpen(false);
                   }}
-                  disabled={isDeleting}
                   className="w-full px-4 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
                 >
                   <Trash2 className="w-4 h-4" />
-                  <span>{isDeleting ? 'Deleting...' : 'Delete post'}</span>
+                  <span>Delete post</span>
                 </button>
               )}
 
@@ -105,6 +103,12 @@ export default function PostMenu({ postId, imageUrl, userId, onReport }: PostMen
           </>
         )}
       </AnimatePresence>
+
+      <DeletePostModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        postId={postId}
+      />
     </div>
   );
 }

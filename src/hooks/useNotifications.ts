@@ -22,5 +22,12 @@ export function useNotifications() {
     return () => unsubscribe();
   }, [currentUser]);
 
-  return notifications;
+  const markAsRead = () => {
+    setNotifications(prev => prev.map(notification => ({
+      ...notification,
+      read: true
+    })));
+  };
+
+  return { notifications, markAsRead };
 }

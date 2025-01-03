@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Send, ArrowLeft } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { ChatMessage, getOrCreateChatRoom, sendMessage, subscribeToMessages, markMessagesAsRead } from '../../lib/services/chatService';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useChat } from '../../hooks/useChat';
+import { useAuth } from '../../contexts/AuthContext';
 import LoadingAnimation from '../common/LoadingAnimation';
-import toast from 'react-hot-toast';
 
 interface ChatBoxProps {
   recipientId: string;
@@ -14,7 +13,7 @@ interface ChatBoxProps {
 }
 
 export default function ChatBox({ recipientId, recipientName, recipientPhoto }: ChatBoxProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [chatRoomId, setChatRoomId] = useState<string | null>(null);

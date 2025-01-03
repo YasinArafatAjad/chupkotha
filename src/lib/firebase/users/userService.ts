@@ -1,23 +1,10 @@
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import { User } from 'firebase/auth';
+import { db } from '../config/firebase';
+import { createUserProfile } from '../../services/profile/profileService';
 
 export async function createOrUpdateUser(user: User) {
-  const userRef = doc(db, 'users', user.uid);
-  
-  const userData = {
-    uid: user.uid,
-    email: user.email,
-    displayName: user.displayName,
-    displayNameLower: user.displayName?.toLowerCase(),
-    photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || '')}&background=random`,
-    lastActive: serverTimestamp(),
-    isOnline: true,
-    updatedAt: serverTimestamp()
-  };
-
-  await setDoc(userRef, userData, { merge: true });
-  return userData;
+  return createUserProfile(user);
 }
 
 export async function getUserProfile(userId: string) {

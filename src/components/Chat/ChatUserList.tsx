@@ -11,7 +11,8 @@ import {
   Conversation, 
   getConversationsQuery,
   mapConversationData,
-  togglePinConversation 
+  togglePinConversation,
+  deleteConversation 
 } from '../../lib/services/conversationService';
 
 export default function ChatUserList() {
@@ -68,9 +69,19 @@ export default function ChatUserList() {
     
     try {
       await togglePinConversation(currentUser.uid, userId, !isPinned);
-      toast.success(isPinned ? 'Conversation unpinned' : 'Conversation pinned');
     } catch (error) {
       toast.error('Failed to update pin status');
+    }
+  };
+
+  const handleDelete = async (userId: string) => {
+    if (!currentUser) return;
+
+    try {
+      await deleteConversation(currentUser.uid, userId);
+      toast.success('Conversation deleted');
+    } catch (error) {
+      toast.error('Failed to delete conversation');
     }
   };
 
@@ -110,6 +121,7 @@ export default function ChatUserList() {
             <ConversationItem 
               conversation={conversation}
               onTogglePin={handleTogglePin}
+              onDelete={handleDelete}
             />
           </motion.div>
         ))}

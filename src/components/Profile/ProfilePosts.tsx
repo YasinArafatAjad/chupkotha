@@ -1,21 +1,22 @@
 import { useState } from 'react';
 import { Grid, Bookmark } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useOfflineCache } from '../../hooks/useOfflineCache';
-import LazyImage from '../common/LazyImage';
+import PostCard from '../Post/PostCard';
+import { Post } from '../../lib/types';
+import LoadingAnimation from '../common/LoadingAnimation';
 
 interface ProfilePostsProps {
   userId: string;
-  posts: Array<{
-    id: string;
-    imageUrl: string;
-    likes: string[];
-  }>;
+  posts: Post[];
+  loading?: boolean;
 }
 
-export default function ProfilePosts({ userId, posts }: ProfilePostsProps) {
+export default function ProfilePosts({ userId, posts, loading }: ProfilePostsProps) {
   const [activeTab, setActiveTab] = useState<'posts' | 'saved'>('posts');
-  const { isOnline } = useOfflineCache();
+
+  if (loading) {
+    return <LoadingAnimation />;
+  }
 
   return (
     <div>
@@ -40,34 +41,23 @@ export default function ProfilePosts({ userId, posts }: ProfilePostsProps) {
         </button>
       </div>
 
-      {!isOnline && (
-        <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200">
-          You're offline. Some content may not be available.
+      {posts.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
+          <Grid className="w-12 h-12 mb-4" />
+          <p className="text-lg font-medium">No posts yet</p>
+          <p className="text-sm">Share your first post with the world!</p>
         </div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="space-y-4 py-4"
+        >
+          {posts.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+        </motion.div>
       )}
-
-      <div className="grid grid-cols-3 gap-1">
-        {posts.map((post) => (
-          <motion.div
-            key={post.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="aspect-square relative group"
-          >
-            <LazyImage
-              src={post.imageUrl}
-              alt=""
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-              <div className="flex items-center space-x-2">
-                <span>❤️</span>
-                <span>{post.likes.length}</span>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
     </div>
   );
 }
