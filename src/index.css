@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  /* Default dark mode text styles */
+  .dark {
+    color-scheme: dark;
+  }
+  
+  .dark body {
+    @apply bg-dark-bg-primary text-dark-text-primary;
+  }
+  
+  /* Improved dark mode text styles */
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+    @apply text-dark-text-primary;
+  }
+  
+  .dark p {
+    @apply text-dark-text-primary;
+  }
+  
+  .dark .text-gray-600 {
+    @apply text-dark-text-secondary;
+  }
+  
+  .dark .text-gray-500 {
+    @apply text-dark-text-muted;
+  }
+}
+
 @layer utilities {
   .line-clamp-3 {
     display: -webkit-box;
