@@ -83,6 +83,12 @@ export default function PostCard({ post }: PostCardProps) {
         isPublic={post.isPublic}
       />
 
+      <div className="p-4">
+          <p className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
+            {post.caption}
+          </p>          
+      </div>
+
       {post.imageUrl && (
         <PostImage
           imageUrl={post.imageUrl}
@@ -90,17 +96,6 @@ export default function PostCard({ post }: PostCardProps) {
           onClick={() => setShowImageModal(true)}
         />
       )}
-
-      <div className="p-4">
-        <div className="space-y-2">
-          <p className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
-            {post.caption}
-          </p>
-          <p className="text-sm text-gray-500">
-            {formatPostDate(post.createdAt)}
-          </p>
-        </div>
-      </div>
 
       <PostActions
         postId={post.id}

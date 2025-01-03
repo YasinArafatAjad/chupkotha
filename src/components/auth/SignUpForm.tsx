@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// import { Camera } from "lucide-react";
 import { motion } from "framer-motion";
 import LoadingAnimation from "../common/LoadingAnimation";
-// import ImageUpload from "./ImageUpload";
+import ImageUpload from "./ImageUpload";
 
 interface SignUpFormProps {
   onSubmit: (
     email: string,
     password: string,
     displayName: string,
+    birthDate: string,
     profileImage: File | null
   ) => Promise<void>;
   loading: boolean;
@@ -20,6 +20,7 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState("");
@@ -48,10 +49,22 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
     return true;
   };
 
+  const validateBirthDate = () => {
+    if (!birthDate) return false;
+    const today = new Date();
+    const birth = new Date(birthDate);
+    const age = today.getFullYear() - birth.getFullYear();
+    return age >= 13;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validatePasswords()) return;
-    await onSubmit(email, password, displayName, profileImage);
+    if (!validateBirthDate()) {
+      setPasswordError("You must be at least 13 years old to sign up");
+      return;
+    }
+    await onSubmit(email, password, displayName, birthDate, profileImage);
   };
 
   return (
@@ -91,7 +104,7 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
         </p>
       </div>
 
-      {/* <ImageUpload imageUrl={imagePreview} onImageChange={setProfileImage} /> */}
+      <ImageUpload imageUrl={imagePreview} onImageChange={setProfileImage} />
 
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-4">
@@ -110,6 +123,24 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
               onChange={(e) => setDisplayName(e.target.value)}
               className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
               placeholder="John Doe"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="birthDate"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
+              Birth Date
+            </label>
+            <input
+              id="birthDate"
+              type="date"
+              required
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+              max={new Date().toISOString().split('T')[0]}
+              className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />
           </div>
 
