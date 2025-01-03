@@ -4,14 +4,30 @@ import { Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
+import { markNotificationsAsRead } from '../../lib/services/notificationService';
 import NotificationBadge from '../common/NotificationBadge';
 import NotificationItem from '../common/NotificationItem';
 import Logo from './Logo';
+import toast from 'react-hot-toast';
 
 export default function TopNav() {
   const [showNotifications, setShowNotifications] = useState(false);
   const { currentUser } = useAuth();
-  const notifications = useNotifications();
+  const { notifications, markAsRead } = useNotifications();
+
+  const handleNotificationClick = async () => {
+    setShowNotifications(!showNotifications);
+    
+    if (!showNotifications && notifications.length > 0 && currentUser) {
+      try {
+        await markNotificationsAsRead(currentUser.uid);
+        markAsRead(); // Update local state
+      } catch (error) {
+        console.error('Error marking notifications as read:', error);
+        toast.error('Failed to update notifications');
+      }
+    }
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 z-50 border-b dark:border-gray-800">
@@ -22,7 +38,7 @@ export default function TopNav() {
 
         <div className="relative">
           <button
-            onClick={() => setShowNotifications(!showNotifications)}
+            onClick={handleNotificationClick}
             className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
           >
             <Bell className="w-6 h-6 text-gray-600 dark:text-gray-300" />
