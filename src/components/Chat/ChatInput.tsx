@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ImageUploadButton from './ImageUploadButton';
@@ -13,6 +13,12 @@ interface ChatInputProps {
 export default function ChatInput({ onSendMessage, onSendImage, disabled }: ChatInputProps) {
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Keep focus on input after component updates
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [sending]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +28,8 @@ export default function ChatInput({ onSendMessage, onSendImage, disabled }: Chat
     try {
       await onSendMessage(message.trim());
       setMessage('');
+      // Focus input after sending
+      inputRef.current?.focus();
     } finally {
       setSending(false);
     }
@@ -31,6 +39,8 @@ export default function ChatInput({ onSendMessage, onSendImage, disabled }: Chat
     setSending(true);
     try {
       await onSendImage(file);
+      // Focus input after sending image
+      inputRef.current?.focus();
     } finally {
       setSending(false);
     }
@@ -44,12 +54,14 @@ export default function ChatInput({ onSendMessage, onSendImage, disabled }: Chat
           disabled={disabled || sending}
         />
         <input
+          ref={inputRef}
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type a message..."
           className="flex-1 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary"
           disabled={disabled || sending}
+          autoFocus
         />
         <motion.button
           whileTap={{ scale: 0.95 }}
