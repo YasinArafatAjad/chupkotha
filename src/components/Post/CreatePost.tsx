@@ -1,15 +1,51 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Globe, Lock } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCreatePost } from '../../hooks/useCreatePost';
+import ImageUploadPreview from './ImageUploadPreview';
 import toast from 'react-hot-toast';
 
 export default function CreatePost() {
   const [caption, setCaption] = useState('');
   const [isPublic, setIsPublic] = useState(true);
+  const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const { currentUser } = useAuth();
   const { handleCreatePost, loading } = useCreatePost();
+
+  useEffect(() => {
+    // Cleanup preview URL on unmount
+    return () => {
+      if (preview) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        if (file.size > 5 * 1024 * 1024) {
+          throw new Error('Image must be less than 5MB');
+        }
+        setImage(file);
+        const previewUrl = URL.createObjectURL(file);
+        setPreview(previewUrl);
+      } catch (error: any) {
+        toast.error(error.message || 'Failed to load image');
+      }
+    }
+  };
+
+  const handleRemoveImage = () => {
+    if (preview) {
+      URL.revokeObjectURL(preview);
+    }
+    setImage(null);
+    setPreview(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +57,7 @@ export default function CreatePost() {
     try {
       await handleCreatePost(
         currentUser.uid,
-        null,
+        image,
         caption,
         currentUser.displayName || 'Anonymous',
         currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.displayName || 'Anonymous')}`,
@@ -39,6 +75,12 @@ export default function CreatePost() {
       className="max-w-xl mx-auto p-4"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
+        <ImageUploadPreview
+          preview={preview}
+          onImageChange={handleImageChange}
+          onRemoveImage={handleRemoveImage}
+        />
+
         <textarea
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
@@ -76,7 +118,7 @@ export default function CreatePost() {
 
         <button
           type="submit"
-          disabled={loading || !caption.trim()}
+          disabled={loading || (!caption.trim() && !image)}
           className="w-full py-2 px-4 bg-primary text-white rounded-lg disabled:opacity-50 hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
         >
           {loading ? 'Creating...' : 'Share'}
