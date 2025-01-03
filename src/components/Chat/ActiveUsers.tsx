@@ -10,6 +10,7 @@ interface ActiveUser {
   displayName: string;
   photoURL: string;
   lastActive: any;
+  isOnline: boolean;
 }
 
 export default function ActiveUsers() {
@@ -17,22 +18,44 @@ export default function ActiveUsers() {
   const { currentUser } = useAuth();
 
   useEffect(() => {
+    // Set timeout for considering a user offline (10 seconds)
+    const OFFLINE_THRESHOLD = 1 * 10 * 1000; // 10 seconds in milliseconds
+
+    // Simplified query that only uses lastActive
     const q = query(
       collection(db, 'users'),
       orderBy('lastActive', 'desc'),
       limit(10)
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const users = snapshot.docs
-        .map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        } as ActiveUser))
-        .filter(user => user.id !== currentUser?.uid);
-      
-      setActiveUsers(users);
-    });
+    const unsubscribe = onSnapshot(q, 
+      (snapshot) => {
+        const now = Date.now();
+        const users = snapshot.docs
+          .map(doc => {
+            const data = doc.data();
+            const lastActive = data.lastActive?.toDate?.();
+            const timeSinceLastActive = lastActive ? now - lastActive.getTime() : Infinity;
+            
+            return {
+              id: doc.id,
+              ...data,
+              // Consider user online only if their last activity was within threshold
+              isOnline: timeSinceLastActive < OFFLINE_THRESHOLD
+            } as ActiveUser;
+          })
+          .filter(user => 
+            user.id !== currentUser?.uid && // Exclude current user
+            user.isOnline // Only include online users
+          );
+        
+        setActiveUsers(users);
+      },
+      (error) => {
+        console.error('Error fetching active users:', error);
+        setActiveUsers([]);
+      }
+    );
 
     return () => unsubscribe();
   }, [currentUser]);
@@ -59,13 +82,22 @@ export default function ActiveUsers() {
                 alt={user.displayName || 'User'}
                 className="w-12 h-12 rounded-full border-2 border-white dark:border-gray-800"
               />
-              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-800"></span>
+              <span 
+                className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-gray-800 ${
+                  user.isOnline ? 'bg-green-500' : 'bg-gray-400'
+                }`}
+              />
               <div className="mt-1 text-xs text-center text-gray-600 dark:text-gray-400 truncate max-w-[64px]">
                 {getDisplayName(user.displayName)}
               </div>
             </Link>
           </motion.div>
         ))}
+        {activeUsers.length === 0 && (
+          <div className="text-sm text-gray-500 dark:text-gray-400 py-2">
+            No active users
+          </div>
+        )}
       </div>
     </div>
   );
