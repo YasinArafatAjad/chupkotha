@@ -15,10 +15,11 @@ import { db } from '../firebase/config/firebase';
 
 export interface Notification {
   id: string;
-  type: 'like' | 'comment' | 'share';
-  postId: string;
+  type: 'like' | 'comment' | 'share' | 'follow';
+  postId?: string;
   senderName: string;
   senderPhoto: string;
+  senderId: string;
   read: boolean;
   createdAt: any;
 }
@@ -30,7 +31,6 @@ interface SenderInfo {
 }
 
 export function subscribeToNotifications(userId: string, callback: (notifications: Notification[]) => void) {
-  // Get all notifications but only count unread ones
   const q = query(
     collection(db, `users/${userId}/notifications`),
     orderBy('createdAt', 'desc'),
@@ -43,20 +43,22 @@ export function subscribeToNotifications(userId: string, callback: (notification
       ...doc.data()
     })) as Notification[];
     
-    // Filter unread for counter but return all notifications
-    const unreadCount = allNotifications.filter(n => !n.read).length;
-    callback(unreadCount > 0 ? allNotifications : []);
+    callback(allNotifications);
   });
 }
 
 export async function createNotification(
   recipientId: string,
-  type: 'like' | 'comment' | 'share',
+  type: 'like' | 'comment' | 'share' | 'follow',
   postId: string,
   sender: SenderInfo
 ) {
   const notificationsRef = collection(db, `users/${recipientId}/notifications`);
   
+  // Don't create notification if sender is recipient
+  if (sender.id === recipientId) return;
+
+  // Create notification
   await addDoc(notificationsRef, {
     type,
     postId,
@@ -66,6 +68,10 @@ export async function createNotification(
     read: false,
     createdAt: serverTimestamp()
   });
+
+  // Play notification sound
+  const audio = new Audio('/sounds/notification.mp3');
+  audio.play().catch(() => {}); // Ignore autoplay restrictions
 }
 
 export async function markNotificationsAsRead(userId: string) {
@@ -76,7 +82,6 @@ export async function markNotificationsAsRead(userId: string) {
   const batch = writeBatch(db);
   
   snapshot.docs.forEach(docRef => {
-    // Only update read status
     batch.update(doc(db, `users/${userId}/notifications/${docRef.id}`), { 
       read: true 
     });
