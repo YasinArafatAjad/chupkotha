@@ -14,10 +14,9 @@ interface PostMenuProps {
   caption: string;
   imageUrl?: string;
   isPublic?: boolean;
-  onReport?: () => void;
 }
 
-export default function PostMenu({ postId, userId, caption, imageUrl, isPublic = true, onReport }: PostMenuProps) {
+export default function PostMenu({ postId, userId, caption, imageUrl, isPublic = true }: PostMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -27,18 +26,11 @@ export default function PostMenu({ postId, userId, caption, imageUrl, isPublic =
 
   const handleCopyLink = async () => {
     try {
-      const postUrl = `${window.location.origin}/post/${postId}`;
-      await navigator.clipboard.writeText(postUrl);
+      await navigator.clipboard.writeText(`${window.location.origin}/post/${postId}`);
       toast.success('Link copied to clipboard');
     } catch (error) {
       toast.error('Failed to copy link');
     }
-    setIsOpen(false);
-  };
-
-  const handleReport = () => {
-    onReport?.();
-    toast.success('Post reported. Thank you for helping keep our community safe.');
     setIsOpen(false);
   };
 
@@ -128,7 +120,10 @@ export default function PostMenu({ postId, userId, caption, imageUrl, isPublic =
               )}
 
               <button
-                onClick={handleReport}
+                onClick={() => {
+                  toast.success('Post reported');
+                  setIsOpen(false);
+                }}
                 className="w-full px-4 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
               >
                 <Flag className="w-4 h-4" />

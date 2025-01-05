@@ -11,7 +11,7 @@ interface PostImageProps {
 const PostImage = memo(({ imageUrl, caption, onClick }: PostImageProps) => {
   return (
     <motion.div 
-      className="aspect-square cursor-pointer"
+      className=" cursor-pointer"
       whileHover={{ scale: 0.995 }}
       onClick={onClick}
     >

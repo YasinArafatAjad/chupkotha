@@ -15,19 +15,21 @@ export default function EditCaptionModal({
   isOpen, 
   onClose, 
   postId, 
-  currentCaption
+  currentCaption = '' // Provide default value
 }: EditCaptionModalProps) {
-  const [caption, setCaption] = useState(currentCaption);
-  const [loading, setLoading] = useState(false);
+  // Initialize with currentCaption or empty string
+  const [caption, setCaption] = useState<string>(currentCaption || '');
 
-  // Update caption state when currentCaption prop changes
+  // Update caption when currentCaption changes or modal opens
   useEffect(() => {
-    setCaption(currentCaption);
-  }, [currentCaption]);
+    if (isOpen) {
+      setCaption(currentCaption || '');
+    }
+  }, [currentCaption, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!caption?.trim()) return;
+    if (!caption.trim()) return;
 
     setLoading(true);
     try {
@@ -40,7 +42,10 @@ export default function EditCaptionModal({
     }
   };
 
+  const [loading, setLoading] = useState(false);
+
   if (!isOpen) return null;
+  console.log(currentCaption)
 
   return (
     <AnimatePresence>
@@ -68,11 +73,11 @@ export default function EditCaptionModal({
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <textarea              
+              value={caption}
               onChange={(e) => setCaption(e.target.value)}
               className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
               rows={4}
               placeholder="Write a caption..."
-              value={caption}
               autoFocus
             />
 
@@ -86,7 +91,7 @@ export default function EditCaptionModal({
               </button>
               <button
                 type="submit"
-                disabled={loading || !caption?.trim()}
+                disabled={loading || !caption.trim()}
                 className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 flex items-center space-x-2"
               >
                 {loading ? <LoadingAnimation /> : 'Save Changes'}

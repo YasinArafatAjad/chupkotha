@@ -9,6 +9,7 @@ interface PostHeaderProps {
   userPhoto: string;
   imageUrl: string;
   postId: string;
+  caption: string;
   createdAt: any;
   isPublic?: boolean;
 }
@@ -19,6 +20,7 @@ export default function PostHeader({
   userPhoto, 
   imageUrl, 
   postId,
+  caption,
   createdAt,
   isPublic = true 
 }: PostHeaderProps) {
@@ -44,7 +46,13 @@ export default function PostHeader({
             </div>
           </div>
         </Link>
-        <PostMenu postId={postId} imageUrl={imageUrl} userId={userId} />
+        <PostMenu 
+          postId={postId} 
+          imageUrl={imageUrl} 
+          userId={userId} 
+          caption={caption}
+          isPublic={isPublic}
+        />
       </div>
     </div>
   );

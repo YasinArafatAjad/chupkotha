@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Camera, Loader, Globe } from 'lucide-react';
+import { X, Camera, Loader, Globe, Crop } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useProfileUpdate } from '../../hooks/useProfileUpdate';
 import { getUserProfile } from '../../lib/firebase/profile/profileService';
+import ImageCropper from './ImageCropper';
 import toast from 'react-hot-toast';
 
 interface EditProfileModalProps {
@@ -19,6 +20,8 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
   const [website, setWebsite] = useState('');
   const [newImage, setNewImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [showCropper, setShowCropper] = useState(false);
+  const [cropperImage, setCropperImage] = useState<string>('');
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -54,12 +57,27 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
         toast.error('Please select an image file');
         return;
       }
-      setNewImage(file);
+
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        setCropperImage(reader.result as string);
+        setShowCropper(true);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCroppedImage = async (blob: Blob) => {
+    const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+    setNewImage(file);
+    setImagePreview(URL.createObjectURL(blob));
+    setShowCropper(false);
+  };
+
+  const handleStartCrop = () => {
+    if (imagePreview) {
+      setCropperImage(imagePreview);
+      setShowCropper(true);
     }
   };
 
@@ -135,15 +153,29 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                       </div>
                     )}
                   </div>
-                  <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 rounded-full cursor-pointer transition-opacity">
-                    <Camera className="w-6 h-6 text-white" />
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                    />
-                  </label>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute inset-0 bg-black/50 rounded-full" />
+                    <div className="relative z-10 flex space-x-2">
+                      <label className="p-1 bg-white rounded-full cursor-pointer hover:bg-gray-100 transition-colors">
+                        <Camera className="w-5 h-5 text-gray-600" />
+                        <input
+                          type="file"
+                          className="hidden"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                        />
+                      </label>
+                      {imagePreview && (
+                        <button
+                          type="button"
+                          onClick={handleStartCrop}
+                          className="p-1 bg-white rounded-full hover:bg-gray-100 transition-colors"
+                        >
+                          <Crop className="w-5 h-5 text-gray-600" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -219,6 +251,16 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
               </div>
             </form>
           </motion.div>
+
+          <AnimatePresence>
+            {showCropper && (
+              <ImageCropper
+                image={cropperImage}
+                onCrop={handleCroppedImage}
+                onClose={() => setShowCropper(false)}
+              />
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
     </AnimatePresence>
