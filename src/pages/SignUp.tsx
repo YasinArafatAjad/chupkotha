@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from '../lib/firebase';
-import { uploadProfileImage } from '../lib/firebase/storage';
+import { signUp } from '../lib/services/auth/signupService';
 import { signInWithGoogle } from '../lib/auth/googleAuth';
-import { createUserProfile } from '../lib/services/profile/profileService';
 import toast from 'react-hot-toast';
 import SignUpForm from '../components/auth/SignUpForm';
 import WelcomeSection from '../components/auth/WelcomeSection';
@@ -22,26 +19,17 @@ export default function SignUp() {
   ) => {
     setLoading(true);
     try {
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      
-      let photoURL = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}`;
-      
-      if (profileImage) {
-        photoURL = await uploadProfileImage(profileImage, user.uid);
-      }
-      
-      await updateProfile(user, {
+      await signUp({
+        email,
+        password,
         displayName,
-        photoURL
+        birthDate,
+        profileImage
       });
-
-      // Create user profile with birthDate
-      await createUserProfile(user, { birthDate });
-
+      
       toast.success('Account created successfully!');
       navigate('/');
     } catch (error: any) {
-      console.error('Signup error:', error);
       toast.error(error.message || 'Failed to create account');
     } finally {
       setLoading(false);

@@ -4,6 +4,9 @@ import { User, Mail, Calendar, Pencil } from 'lucide-react';
 import { updateProfile } from 'firebase/auth';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import toast from 'react-hot-toast';
+import { format } from 'date-fns';
+
+
 
 export default function AccountInfo() {
   const { currentUser } = useAuth();
@@ -39,29 +42,36 @@ export default function AccountInfo() {
     }
   };
 
+  const calculateAge = (birthDate: string): number => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    
+    return age;
+  };
+
   const handleUpdateBirthDate = async () => {
     if (!currentUser || !birthDate) {
       toast.error('Birth date is required');
       return;
     }
 
-    // Validate age
-    const today = new Date();
     const birth = new Date(birthDate);
-    const age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
+    const today = new Date();
     
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-
-    if (age < 13) {
-      toast.error('You must be at least 13 years old');
+    if (birth > today) {
+      toast.error('Birth date cannot be in the future');
       return;
     }
 
-    if (birth > today) {
-      toast.error('Birth date cannot be in the future');
+    const age = calculateAge(birthDate);
+    if (age < 13) {
+      toast.error('You must be at least 13 years old');
       return;
     }
 
@@ -69,6 +79,14 @@ export default function AccountInfo() {
     if (success) {
       setIsEditing(null);
       toast.success('Birth date updated successfully');
+    }
+  };
+
+  const formatBirthDate = (date: string) => {
+    try {
+      return format(new Date(date), 'MMMM d, yyyy');
+    } catch {
+      return 'Not set';
     }
   };
 
@@ -185,7 +203,7 @@ export default function AccountInfo() {
           ) : (
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                {currentUser?.birthDate ? new Date(currentUser.birthDate).toLocaleDateString() : 'Not set'}
+                {currentUser?.birthDate ? formatBirthDate(currentUser?.birthDate) : 'Not set'}
               </span>
               <button
                 onClick={() => setIsEditing('birthDate')}

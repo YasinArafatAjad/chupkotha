@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Settings, Mail, Globe, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
+import ProfileImageModal from './ProfileImageModal';
 
 interface ProfileHeaderProps {
   profile: {
@@ -19,6 +21,8 @@ interface ProfileHeaderProps {
 }
 
 export default function ProfileHeader({ profile, isOwnProfile, onEditProfile }: ProfileHeaderProps) {
+  const [showImageModal, setShowImageModal] = useState(false);
+
   const formatBirthDate = (date: string | undefined) => {
     if (!date) return null;
     try {
@@ -32,11 +36,18 @@ export default function ProfileHeader({ profile, isOwnProfile, onEditProfile }: 
   return (
     <div className="p-4 space-y-6">
       <div className="flex items-center space-x-6">
-        <img
-          src={profile.photoURL || 'https://via.placeholder.com/80'}
-          alt={profile.displayName}
-          className="w-24 h-24 rounded-full border-2 border-gray-200 dark:border-gray-700"
-        />
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setShowImageModal(true)}
+          className="relative w-24 h-24 rounded-full border-2 border-gray-200 dark:border-gray-700 overflow-hidden cursor-pointer"
+        >
+          <img
+            src={profile.photoURL || 'https://via.placeholder.com/80'}
+            alt={profile.displayName}
+            className="w-full h-full object-cover"
+          />
+        </motion.button>
         
         <div className="flex-1 space-y-4">
           {/* profile name */}
@@ -101,6 +112,13 @@ export default function ProfileHeader({ profile, isOwnProfile, onEditProfile }: 
           )}
         </div>
       </div>
+
+      <ProfileImageModal
+        isOpen={showImageModal}
+        onClose={() => setShowImageModal(false)}
+        imageUrl={profile.photoURL}
+        userName={profile.displayName}
+      />
     </div>
   );
 }
