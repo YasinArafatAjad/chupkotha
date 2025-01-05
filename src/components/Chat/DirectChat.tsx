@@ -6,6 +6,8 @@ import { useChat } from '../../hooks/useChat';
 import { useAuth } from '../../contexts/AuthContext';
 import { uploadToCloudinary } from '../../lib/cloudinary';
 import LoadingAnimation from '../common/LoadingAnimation';
+import ChatMessage from './ChatMessage';
+import ImagePreviewModal from './ImagePreviewModal';
 import toast from 'react-hot-toast';
 
 export default function DirectChat() {
@@ -14,6 +16,7 @@ export default function DirectChat() {
   const { currentUser } = useAuth();
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -94,41 +97,12 @@ export default function DirectChat() {
     <div className="flex flex-col h-[calc(100vh-8rem)]">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
-          <motion.div
+          <ChatMessage
             key={message.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`flex items-start space-x-2 ${
-              message.userId === currentUser?.uid ? 'flex-row-reverse space-x-reverse' : ''
-            }`}
-          >
-            <img
-              src={message.userPhoto}
-              alt={message.userName}
-              className="w-8 h-8 rounded-full"
-            />
-            <div
-              className={`max-w-[70%] rounded-lg p-3 ${
-                message.userId === currentUser?.uid
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 dark:bg-gray-800'
-              }`}
-            >
-              {message.imageUrl ? (
-                <img 
-                  src={message.imageUrl} 
-                  alt="Shared image"
-                  className="rounded-lg max-w-full cursor-pointer hover:opacity-90 transition-opacity"
-                  onClick={() => window.open(message.imageUrl, '_blank')}
-                />
-              ) : (
-                <p>{message.text}</p>
-              )}
-              <div className="text-xs opacity-75 mt-1">
-                {message.createdAt?.toDate().toLocaleTimeString()}
-              </div>
-            </div>
-          </motion.div>
+            message={message}
+            isOwnMessage={message.userId === currentUser?.uid}
+            onImageClick={(imageUrl) => setPreviewImage(imageUrl)}
+          />
         ))}
         <div ref={messagesEndRef} />
       </div>
@@ -166,6 +140,12 @@ export default function DirectChat() {
           </motion.button>
         </div>
       </form>
+
+      <ImagePreviewModal
+        isOpen={!!previewImage}
+        onClose={() => setPreviewImage(null)}
+        imageUrl={previewImage || ''}
+      />
     </div>
   );
 }
