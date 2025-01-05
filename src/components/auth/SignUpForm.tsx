@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import LoadingAnimation from "../common/LoadingAnimation";
 import ImageUpload from "./ImageUpload";
+import ImageCropper from "../Profile/ImageCropper";
 import toast from 'react-hot-toast';
 
 interface SignUpFormProps {
@@ -25,6 +26,8 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState("");
+  const [showCropper, setShowCropper] = useState(false);
+  const [cropperImage, setCropperImage] = useState<string>('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,6 +81,24 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
     return true;
   };
 
+  const handleImageChange = (file: File) => {
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCropperImage(reader.result as string);
+        setShowCropper(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCroppedImage = async (blob: Blob) => {
+    const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+    setProfileImage(file);
+    setImagePreview(URL.createObjectURL(blob));
+    setShowCropper(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validatePasswords()) return;
@@ -123,7 +144,7 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
         </p>
       </div>
 
-      <ImageUpload imageUrl={imagePreview} onImageChange={setProfileImage} />
+      <ImageUpload imageUrl={imagePreview} onImageChange={handleImageChange} />
 
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-4">
@@ -244,6 +265,14 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
           </button>
         </p>
       </div>
+
+      {showCropper && (
+        <ImageCropper
+          image={cropperImage}
+          onCrop={handleCroppedImage}
+          onClose={() => setShowCropper(false)}
+        />
+      )}
     </motion.div>
   );
 }
