@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { editPostCaption } from '../../lib/services/posts/editPostService';
@@ -15,14 +15,19 @@ export default function EditCaptionModal({
   isOpen, 
   onClose, 
   postId, 
-  currentCaption = '' // Provide default value
+  currentCaption
 }: EditCaptionModalProps) {
   const [caption, setCaption] = useState(currentCaption);
   const [loading, setLoading] = useState(false);
 
+  // Update caption state when currentCaption prop changes
+  useEffect(() => {
+    setCaption(currentCaption);
+  }, [currentCaption]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!caption?.trim()) return; // Safe access with optional chaining
+    if (!caption?.trim()) return;
 
     setLoading(true);
     try {
@@ -62,12 +67,13 @@ export default function EditCaptionModal({
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <textarea
-              value={caption}
+            <textarea              
               onChange={(e) => setCaption(e.target.value)}
               className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
               rows={4}
               placeholder="Write a caption..."
+              value={caption}
+              autoFocus
             />
 
             <div className="flex justify-end space-x-3">
