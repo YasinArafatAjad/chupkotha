@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Trash2 } from 'lucide-react';
 import LoadingAnimation from '../common/LoadingAnimation';
@@ -9,15 +9,16 @@ interface DeletePostModalProps {
   isOpen: boolean;
   onClose: () => void;
   postId: string;
+  imageUrl?: string;
 }
 
-export default function DeletePostModal({ isOpen, onClose, postId }: DeletePostModalProps) {
+export default function DeletePostModal({ isOpen, onClose, postId, imageUrl }: DeletePostModalProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    const success = await deletePost(postId);
+    const success = await deletePost(postId, imageUrl);
     if (success) {
       onClose();
       navigate('/');
@@ -70,6 +71,7 @@ export default function DeletePostModal({ isOpen, onClose, postId }: DeletePostM
                   <li>Remove the post permanently</li>
                   <li>Delete all comments and likes</li>
                   <li>Remove the post from all saved collections</li>
+                  <li>Delete the associated image</li>
                 </ul>
               </div>
             </div>

@@ -1,10 +1,13 @@
-import { Cloudinary } from '@cloudinary/url-gen';
+// Cloudinary configuration and constants
+export const cloudinaryConfig = {
+  cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
+  uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
+  apiKey: import.meta.env.VITE_CLOUDINARY_API_KEY,
+  apiSecret: import.meta.env.VITE_CLOUDINARY_API_SECRET
+};
 
-export const cloudinary = new Cloudinary({
-  cloud: {
-    cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
-  },
-  url: {
-    secure: true
-  }
-});
+export const cloudinaryUrls = {
+  base: `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}`,
+  upload: `/image/upload`,
+  destroy: `/image/destroy`
+};

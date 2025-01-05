@@ -12,11 +12,12 @@ interface PostMenuProps {
   postId: string;
   userId: string;
   caption: string;
+  imageUrl?: string;
   isPublic?: boolean;
   onReport?: () => void;
 }
 
-export default function PostMenu({ postId, userId, caption, isPublic = true, onReport }: PostMenuProps) {
+export default function PostMenu({ postId, userId, caption, imageUrl, isPublic = true, onReport }: PostMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -142,6 +143,7 @@ export default function PostMenu({ postId, userId, caption, isPublic = true, onR
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         postId={postId}
+        imageUrl={imageUrl}
       />
 
       <EditCaptionModal
