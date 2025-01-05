@@ -1,23 +1,26 @@
 import { useState } from 'react';
-import { MoreHorizontal, ExternalLink, Flag, Link as LinkIcon, Trash2, PencilLine } from 'lucide-react';
+import { MoreHorizontal, ExternalLink, Flag, Link as LinkIcon, Trash2, PencilLine, Lock, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import DeletePostModal from './DeletePostModal';
 import EditCaptionModal from './EditCaptionModal';
+import PrivacyModal from './PrivacyModal';
 import toast from 'react-hot-toast';
 
 interface PostMenuProps {
   postId: string;
   userId: string;
   caption: string;
+  isPublic?: boolean;
   onReport?: () => void;
 }
 
-export default function PostMenu({ postId, userId, caption, onReport }: PostMenuProps) {
+export default function PostMenu({ postId, userId, caption, isPublic = true, onReport }: PostMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
@@ -97,6 +100,21 @@ export default function PostMenu({ postId, userId, caption, onReport }: PostMenu
 
                   <button
                     onClick={() => {
+                      setShowPrivacyModal(true);
+                      setIsOpen(false);
+                    }}
+                    className="w-full px-4 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    {isPublic ? (
+                      <Globe className="w-4 h-4" />
+                    ) : (
+                      <Lock className="w-4 h-4" />
+                    )}
+                    <span>Change privacy</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
                       setShowDeleteModal(true);
                       setIsOpen(false);
                     }}
@@ -131,6 +149,13 @@ export default function PostMenu({ postId, userId, caption, onReport }: PostMenu
         onClose={() => setShowEditModal(false)}
         postId={postId}
         currentCaption={caption}
+      />
+
+      <PrivacyModal
+        isOpen={showPrivacyModal}
+        onClose={() => setShowPrivacyModal(false)}
+        postId={postId}
+        currentPrivacy={isPublic}
       />
     </div>
   );

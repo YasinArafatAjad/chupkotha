@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import {LinesEllipsis} from "react-lines-ellipsis";
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { formatPostDate } from '../../lib/utils/date/formatters';
@@ -15,12 +16,14 @@ import toast from 'react-hot-toast';
 
 interface PostCardProps {
   post: Post;
+  onPrivacyChange?: (postId: string, isPublic: boolean) => void;
 }
 
-export default function PostCard({ post }: PostCardProps) {
+export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
   const [isLiked, setIsLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [isPublic, setIsPublic] = useState(post.isPublic ?? true);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
@@ -29,6 +32,10 @@ export default function PostCard({ post }: PostCardProps) {
       setIsLiked(post.likes.includes(currentUser.uid));
     }
   }, [currentUser, post.likes]);
+
+  useEffect(() => {
+    setIsPublic(post.isPublic ?? true);
+  }, [post.isPublic]);
 
   const handleLike = async () => {
     if (!currentUser) {
@@ -56,7 +63,7 @@ export default function PostCard({ post }: PostCardProps) {
         text,
         userId: currentUser.uid,
         userName: currentUser.displayName || 'Anonymous',
-        userPhoto: currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.displayName || 'Anonymous')}`
+        userPhoto: currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.displayName || 'Anonymous')}&background=random`
       };
 
       await CommentService.addComment(post.id, commentData, post.userId);
@@ -66,6 +73,15 @@ export default function PostCard({ post }: PostCardProps) {
       return false;
     }
   };
+
+  const handlePrivacyChange = (newIsPublic: boolean) => {
+    setIsPublic(newIsPublic);
+    onPrivacyChange?.(post.id, newIsPublic);
+  };
+
+    // Line ellipsis
+  const [ellipsis, setEllipsis] = useState(false);
+  const handleEllipsis = () => setEllipsis(!ellipsis);
 
   return (
     <motion.div
@@ -80,14 +96,31 @@ export default function PostCard({ post }: PostCardProps) {
         imageUrl={post.imageUrl}
         postId={post.id}
         createdAt={post.createdAt}
-        isPublic={post.isPublic}
+        isPublic={isPublic}
+        onPrivacyChange={handlePrivacyChange}
       />
 
-      <div className="p-4">
-          <p className="text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
-            {post.caption}
-          </p>          
-      </div>
+      {ellipsis ? (
+                  <p
+                    onClick={handleEllipsis}
+                    className="cursor-pointer caption text-wrap whitespace-pre pt-5 pl-5 text-sm text-slate-700 dark:text-[#fbfcfc]"
+                  >
+                    {caption}
+                  </p>
+                ) : (
+                  <div
+                    onClick={handleEllipsis}
+                    className="cursor-pointer caption text-wrap whitespace-pre pt-5 pl-5 text-sm text-slate-700 dark:text-[#fbfcfc]"
+                  >
+                    <LinesEllipsis
+                      text={caption}
+                      maxLine={3}
+                      ellipsis={<span>...see more</span>}
+                      trimRight
+                      basedOn="letters"
+                    />
+                  </div>
+                )}
 
       {post.imageUrl && (
         <PostImage
