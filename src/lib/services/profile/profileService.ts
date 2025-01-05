@@ -1,34 +1,23 @@
 import { User } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase/config/firebase';
-import { getProfilePhotoUrl } from '../../utils/profile/photoUtils';
+import { createProfileData, UserProfileData } from '../../utils/user/profileUtils';
 
-interface ProfileData {
-  uid: string;
-  email: string | null;
-  displayName: string;
-  displayNameLower: string;
-  photoURL: string;
-  lastActive: any;
-  isOnline: boolean;
-  updatedAt: any;
-}
-
-export async function createUserProfile(user: User): Promise<ProfileData> {
+export async function createUserProfile(
+  user: User, 
+  additionalData?: { birthDate?: string }
+): Promise<UserProfileData> {
   const userRef = doc(db, 'users', user.uid);
-  const displayName = user.displayName || user.email?.split('@')[0] || 'User';
   
-  const profileData: ProfileData = {
-    uid: user.uid,
-    email: user.email,
-    displayName,
-    displayNameLower: displayName.toLowerCase(),
-    photoURL: getProfilePhotoUrl(user.photoURL, displayName),
+  const baseProfile = createProfileData(user, additionalData);
+  
+  const profileData: UserProfileData = {
+    ...baseProfile,
     lastActive: serverTimestamp(),
     isOnline: true,
     updatedAt: serverTimestamp()
   };
 
-  await setDoc(userRef, profileData, { merge: true });
+  await setDoc(userRef, profileData);
   return profileData;
 }

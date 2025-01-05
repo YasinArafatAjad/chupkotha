@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import LoadingAnimation from "../common/LoadingAnimation";
 import ImageUpload from "./ImageUpload";
+import toast from 'react-hot-toast';
 
 interface SignUpFormProps {
   onSubmit: (
@@ -50,27 +51,45 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
   };
 
   const validateBirthDate = () => {
-    if (!birthDate) return false;
+    if (!birthDate) {
+      toast.error('Birth date is required');
+      return false;
+    }
+
     const today = new Date();
     const birth = new Date(birthDate);
     const age = today.getFullYear() - birth.getFullYear();
-    return age >= 13;
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    if (age < 13) {
+      toast.error('You must be at least 13 years old to sign up');
+      return false;
+    }
+
+    if (birth > today) {
+      toast.error('Birth date cannot be in the future');
+      return false;
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validatePasswords()) return;
-    if (!validateBirthDate()) {
-      setPasswordError("You must be at least 13 years old to sign up");
-      return;
-    }
+    if (!validateBirthDate()) return;
+
     await onSubmit(email, password, displayName, birthDate, profileImage);
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg"
     >
       <div className="flex flex-col items-center">

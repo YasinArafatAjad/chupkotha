@@ -1,5 +1,6 @@
-import { Settings, Mail, Globe } from 'lucide-react';
+import { Settings, Mail, Globe, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { format } from 'date-fns';
 
 interface ProfileHeaderProps {
   profile: {
@@ -8,6 +9,7 @@ interface ProfileHeaderProps {
     bio: string;
     email: string;
     website?: string;
+    birthDate?: string;
     followers: string[];
     following: string[];
     postsCount: number;
@@ -17,6 +19,16 @@ interface ProfileHeaderProps {
 }
 
 export default function ProfileHeader({ profile, isOwnProfile, onEditProfile }: ProfileHeaderProps) {
+  const formatBirthDate = (date: string | undefined) => {
+    if (!date) return null;
+    try {
+      return format(new Date(date), 'MMMM d, yyyy');
+    } catch (error) {
+      console.error('Error formatting birth date:', error);
+      return null;
+    }
+  };
+
   return (
     <div className="p-4 space-y-6">
       <div className="flex items-center space-x-6">
@@ -28,7 +40,7 @@ export default function ProfileHeader({ profile, isOwnProfile, onEditProfile }: 
         
         <div className="flex-1 space-y-4">
           {/* profile name */}
-            <h1 className="capitalize text-2xl font-bold">{profile.displayName}</h1>  
+          <h1 className="capitalize text-2xl font-bold">{profile.displayName}</h1>  
           {/* bio */}
           {profile.bio && (
             <motion.p 
@@ -39,9 +51,6 @@ export default function ProfileHeader({ profile, isOwnProfile, onEditProfile }: 
               {profile.bio}
             </motion.p>
           )}
-          
-
-          
         </div>
       </div>
 
@@ -59,32 +68,39 @@ export default function ProfileHeader({ profile, isOwnProfile, onEditProfile }: 
           <div className="text-sm text-gray-500">Following</div>
         </div>
       </div>
+
       <div className="flex flex-col justify-around py-1 dark:border-gray-800">
         {/* info */}
         <h3 className="capitalize text-md font-bold py-2">Info</h3>
         
-          <div className="space-y-2 text-sm">
-            {profile.email && (
-              <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
-                <Mail className="w-4 h-4" />
-                <span>{profile.email}</span>
-              </div>
-            )}
-            {profile.website && (
-              <div className="flex items-center space-x-2">
-                <Globe className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                <a 
-                  href={profile.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  {profile.website}
-                </a>
-              </div>
-            )}
-          </div>
-    </div>
+        <div className="space-y-2 text-sm">
+          {profile.email && (
+            <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+              <Mail className="w-4 h-4" />
+              <span>{profile.email}</span>
+            </div>
+          )}
+          {profile.website && (
+            <div className="flex items-center space-x-2">
+              <Globe className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <a 
+                href={profile.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                {profile.website}
+              </a>
+            </div>
+          )}
+          {profile.birthDate && (
+            <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+              <Calendar className="w-4 h-4" />
+              <span>{formatBirthDate(profile.birthDate)}</span>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

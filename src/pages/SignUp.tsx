@@ -4,7 +4,7 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { uploadProfileImage } from '../lib/firebase/storage';
 import { signInWithGoogle } from '../lib/auth/googleAuth';
-import { createUserDocument } from '../lib/services/userService';
+import { createUserProfile } from '../lib/services/profile/profileService';
 import toast from 'react-hot-toast';
 import SignUpForm from '../components/auth/SignUpForm';
 import WelcomeSection from '../components/auth/WelcomeSection';
@@ -35,8 +35,8 @@ export default function SignUp() {
         photoURL
       });
 
-      // Create user document with additional data
-      await createUserDocument(user, { birthDate });
+      // Create user profile with birthDate
+      await createUserProfile(user, { birthDate });
 
       toast.success('Account created successfully!');
       navigate('/');
