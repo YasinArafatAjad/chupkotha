@@ -35,7 +35,7 @@ export default function ImagePreviewModal({ isOpen, onClose, imageUrl }: ImagePr
           <img
             src={imageUrl}
             alt="Preview"
-            className="w-full h-full object-contain rounded-lg"
+            className="w-full h-full obj ect-contain rounded-lg"
           />
         </motion.div>
       </motion.div>

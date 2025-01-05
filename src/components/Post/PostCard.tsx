@@ -86,7 +86,7 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-4"
+      className="bg-white dark:bg-gray-800 rounded-lg shadow-sm  mb-4"
     >
       <PostHeader
         userId={post.userId}
