@@ -1,36 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRealtimePosts } from '../../hooks/useRealtimePosts';
-import { getLocalPosts } from '../../lib/services/posts/localPosts';
 import PostCard from '../Post/PostCard';
 import LoadingAnimation from '../common/LoadingAnimation';
 
 export default function RealtimeFeed() {
-  const { posts: livePosts, loading: liveLoading } = useRealtimePosts();
-  const [localPosts, setLocalPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { posts, loading } = useRealtimePosts();
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Load preReady posts
-    const preReadyPosts = getLocalPosts();
-    setLocalPosts(preReadyPosts);
-    setLoading(false);
-  }, []);
-
-  if (liveLoading || loading) {
+  if (loading) {
     return <LoadingAnimation />;
   }
 
-  // Combine and sort all posts by date
-  const allPosts = [...livePosts, ...localPosts].sort((a, b) => {
-    const dateA = a.createdAt?.toDate?.() || new Date(a.createdAt);
-    const dateB = b.createdAt?.toDate?.() || new Date(b.createdAt);
-    return dateB.getTime() - dateA.getTime();
-  });
+  if (error) {
+    return (
+      <div className="text-center py-8 text-red-500">
+        {error}
+      </div>
+    );
+  }
 
   return (
     <AnimatePresence mode="popLayout">
-      {allPosts.map((post) => (
+      {posts.map((post) => (
         <motion.div
           key={post.id}
           initial={{ opacity: 0, y: 20 }}
@@ -41,7 +33,7 @@ export default function RealtimeFeed() {
           <PostCard post={post} />
         </motion.div>
       ))}
-      {allPosts.length === 0 && (
+      {posts.length === 0 && (
         <div className="text-center py-8">
           <p className="text-gray-500 dark:text-gray-400">No posts to show</p>
         </div>

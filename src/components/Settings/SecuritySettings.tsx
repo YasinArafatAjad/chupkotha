@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Lock, Mail } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff } from 'lucide-react';
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
@@ -13,12 +13,15 @@ export default function SecuritySettings() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { currentUser } = useAuth();
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentUser) return;
+    if (!currentUser?.email) return;
 
     if (newPassword !== confirmPassword) {
       toast.error('New passwords do not match');
@@ -26,7 +29,7 @@ export default function SecuritySettings() {
     }
 
     if (newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error('New password must be at least 6 characters');
       return;
     }
 
@@ -34,7 +37,7 @@ export default function SecuritySettings() {
     try {
       // Re-authenticate user
       const credential = EmailAuthProvider.credential(
-        currentUser.email!,
+        currentUser.email,
         currentPassword
       );
       await reauthenticateWithCredential(currentUser, credential);
@@ -60,44 +63,42 @@ export default function SecuritySettings() {
       <h2 className="text-lg font-semibold mb-4">Security Settings</h2>
       
       <div className="space-y-4">
+        {/* Email Settings */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Mail className="w-5 h-5 text-gray-500" />
             <div>
-              <p className="font-medium">Email Address</p>
-              <p className="text-sm text-gray-500">Update your email address</p>
+              <span className="font-medium">Email Address</span>
+              <p className="text-sm text-gray-500">{currentUser?.email}</p>
             </div>
           </div>
           <button
             onClick={() => setShowEditEmail(true)}
-            className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+            className="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
           >
             Change Email
           </button>
         </div>
 
+        {/* Password Settings */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Lock className="w-5 h-5 text-gray-500" />
             <div>
-              <p className="font-medium">Password</p>
-              <p className="text-sm text-gray-500">Update your password</p>
+              <span className="font-medium">Password</span>
+              <p className="text-sm text-gray-500">Last changed: Never</p>
             </div>
           </div>
           <button
             onClick={() => setShowChangePassword(true)}
-            className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+            className="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
           >
             Change Password
           </button>
         </div>
       </div>
 
-      <EditEmailModal 
-        isOpen={showEditEmail}
-        onClose={() => setShowEditEmail(false)}
-      />
-
+      {/* Change Password Modal */}
       <AnimatePresence>
         {showChangePassword && (
           <motion.div
@@ -122,40 +123,67 @@ export default function SecuritySettings() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Current Password
                   </label>
-                  <input
-                    type="password"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary"
-                    required
-                  />
+                  <div className="relative">
+                    <input
+                      type={showCurrentPassword ? "text" : "password"}
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                    >
+                      {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     New Password
                   </label>
-                  <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary"
-                    required
-                    minLength={6}
-                  />
+                  <div className="relative">
+                    <input
+                      type={showNewPassword ? "text" : "password"}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary pr-10"
+                      required
+                      minLength={6}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                    >
+                      {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Confirm New Password
                   </label>
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary"
-                    required
-                  />
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="flex justify-end space-x-3 mt-6">
@@ -168,7 +196,7 @@ export default function SecuritySettings() {
                   </button>
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || !currentPassword || !newPassword || !confirmPassword}
                     className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 flex items-center space-x-2"
                   >
                     {loading ? <LoadingAnimation /> : 'Update Password'}
@@ -179,6 +207,11 @@ export default function SecuritySettings() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <EditEmailModal
+        isOpen={showEditEmail}
+        onClose={() => setShowEditEmail(false)}
+      />
     </section>
   );
 }

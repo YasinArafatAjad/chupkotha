@@ -83,7 +83,7 @@ export default function ActiveUsers() {
                 className="w-12 h-12 rounded-full border-2 border-white dark:border-gray-800"
               />
               <span 
-                className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-gray-800 ${
+                className={`absolute top-0 right-0 w-3 h-3 rounded-full border-2 border-white dark:border-gray-800 ${
                   user.isOnline ? 'bg-green-500' : 'bg-gray-400'
                 }`}
               />

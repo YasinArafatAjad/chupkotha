@@ -1,15 +1,11 @@
 import { Post } from '../../types';
 import { fetchLivePosts } from './fetchPosts';
-import { getLocalPosts } from './localPosts';
 
 export async function getAllPosts(): Promise<Post[]> {
-  const [livePosts, localPosts] = await Promise.all([
-    fetchLivePosts(),
-    Promise.resolve(getLocalPosts())
-  ]);
-
+  const livePosts = await fetchLivePosts();
+  
   // Filter out private posts
-  const publicPosts = [...livePosts, ...localPosts].filter(post => post.isPublic !== false);
+  const publicPosts = livePosts.filter(post => post.isPublic !== false);
   
   // Sort by createdAt in descending order
   return publicPosts.sort((a, b) => {
@@ -20,4 +16,3 @@ export async function getAllPosts(): Promise<Post[]> {
 }
 
 export { fetchLivePosts } from './fetchPosts';
-export { getLocalPosts } from './localPosts';
