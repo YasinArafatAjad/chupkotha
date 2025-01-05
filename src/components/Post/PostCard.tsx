@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import {LinesEllipsis} from "react-lines-ellipsis";
+import { useState,useEffect } from 'react';
+import LinesEllipsis from 'react-lines-ellipsis'; // Fixed import
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { formatPostDate } from '../../lib/utils/date/formatters';
@@ -24,6 +24,7 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [isPublic, setIsPublic] = useState(post.isPublic ?? true);
+  const [ellipsis, setEllipsis] = useState(false);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
@@ -79,8 +80,6 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
     onPrivacyChange?.(post.id, newIsPublic);
   };
 
-    // Line ellipsis
-  const [ellipsis, setEllipsis] = useState(false);
   const handleEllipsis = () => setEllipsis(!ellipsis);
 
   return (
@@ -100,27 +99,31 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
         onPrivacyChange={handlePrivacyChange}
       />
 
-      {ellipsis ? (
-                  <p
-                    onClick={handleEllipsis}
-                    className="cursor-pointer caption text-wrap whitespace-pre pt-5 pl-5 text-sm text-slate-700 dark:text-[#fbfcfc]"
-                  >
-                    {caption}
-                  </p>
-                ) : (
-                  <div
-                    onClick={handleEllipsis}
-                    className="cursor-pointer caption text-wrap whitespace-pre pt-5 pl-5 text-sm text-slate-700 dark:text-[#fbfcfc]"
-                  >
-                    <LinesEllipsis
-                      text={caption}
-                      maxLine={3}
-                      ellipsis={<span>...see more</span>}
-                      trimRight
-                      basedOn="letters"
-                    />
-                  </div>
-                )}
+      {post.caption && (
+        <div className="px-4 py-2">
+          {ellipsis ? (
+            <p
+              onClick={handleEllipsis}
+              className="cursor-pointer whitespace-pre-wrap text-gray-800 dark:text-gray-200"
+            >
+              {post.caption}
+            </p>
+          ) : (
+            <div
+              onClick={handleEllipsis}
+              className="cursor-pointer"
+            >
+              <LinesEllipsis
+                text={post.caption}
+                maxLine={3}
+                ellipsis="... see more"
+                trimRight
+                basedOn="letters"
+              />
+            </div>
+          )}
+        </div>
+      )}
 
       {post.imageUrl && (
         <PostImage
