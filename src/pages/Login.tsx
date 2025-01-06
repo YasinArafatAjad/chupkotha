@@ -18,7 +18,35 @@ export default function Login() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const navigate = useNavigate();
 
-  // ... rest of the existing code ...
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || !password) return;
+
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast.success('Logged in successfully!');
+      navigate('/');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      const errorMessage = (() => {
+        switch (error.code) {
+          case 'auth/invalid-email':
+            return 'Invalid email address';
+          case 'auth/user-disabled':
+            return 'This account has been disabled';
+          case 'auth/user-not-found':
+          case 'auth/wrong-password':
+            return 'Invalid email or password';
+          default:
+            return 'Failed to log in';
+        }
+      })();
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
@@ -35,10 +63,17 @@ export default function Login() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
+              className="space-y-6"
             >
-              {/* ... logo and header ... */}
+              <div className="flex flex-col items-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+                  <Camera className="w-8 h-8 text-primary" />
+                </div>
+                <h2 className="text-2xl font-bold">Welcome back</h2>
+                <p className="text-gray-600 dark:text-gray-400">Sign in to your account</p>
+              </div>
 
-              <form className="mt-8 space-y-6" onSubmit={handleEmailLogin}>
+              <form className="space-y-6" onSubmit={handleEmailLogin}>
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="email" className="sr-only">Email address</label>
@@ -75,10 +110,38 @@ export default function Login() {
                   </div>
                 </div>
 
-                {/* ... rest of the form ... */}
+                <div className="flex items-center justify-between">
+                  <div className="text-sm">
+                    <button
+                      type="button"
+                      onClick={() => setShowForgotPassword(true)}
+                      className="text-primary hover:text-primary/90"
+                    >
+                      Forgot your password?
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
+                >
+                  {loading ? <LoadingAnimation /> : 'Sign in'}
+                </button>
               </form>
 
-              {/* ... rest of the component ... */}
+              <GoogleButton onClick={signInWithGoogle} />
+
+              <p className="text-center text-sm">
+                Don't have an account?{' '}
+                <button
+                  onClick={() => navigate('/signup')}
+                  className="text-primary hover:text-primary/90 font-medium"
+                >
+                  Sign up
+                </button>
+              </p>
             </motion.div>
           )}
         </AnimatePresence>
