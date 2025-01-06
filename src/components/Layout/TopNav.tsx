@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
@@ -15,6 +15,7 @@ export default function TopNav() {
   const { currentUser } = useAuth();
   const { notifications } = useNotifications();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,6 +31,10 @@ export default function TopNav() {
   const handleNotificationClick = () => {
     navigate('/notifications');
   };
+
+  // Hide top nav in chat
+  const isChat = location.pathname.startsWith('/chat/');
+  if (isChat) return null;
 
   return (
     <AnimatePresence>
