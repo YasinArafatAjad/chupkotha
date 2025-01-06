@@ -1,4 +1,5 @@
-// Update validateProfileData to remove image validation
+import { ProfileUpdate } from './types';
+
 export function validateProfileData(data: ProfileUpdate): void {
   if (!data.displayName.trim()) {
     throw new Error('Display name is required');

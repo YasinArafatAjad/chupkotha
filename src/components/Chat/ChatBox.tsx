@@ -1,13 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useChat } from '../../hooks/useChat';
 import { useAuth } from '../../contexts/AuthContext';
-import { uploadChatImage } from '../../lib/services/chat/imageUploadService';
+import { uploadToCloudinary } from '../../lib/cloudinary';
 import ChatInput from './ChatInput';
 import MessageList from './MessageList';
 import LoadingAnimation from '../common/LoadingAnimation';
+import ImagePreviewModal from './ImagePreviewModal';
+import InboxHeader from './InboxHeader';
+import toast from 'react-hot-toast';
 
 interface ChatBoxProps {
   recipientId: string;
@@ -19,6 +21,7 @@ export default function ChatBox({ recipientId, recipientName, recipientPhoto }: 
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [chatRoomId, setChatRoomId] = useState<string | null>(null);
+  const [showImageModal, setShowImageModal] = useState(false);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -69,7 +72,7 @@ export default function ChatBox({ recipientId, recipientName, recipientPhoto }: 
   const handleSendImage = async (file: File) => {
     if (!currentUser || !chatRoomId) return;
 
-    const imageUrl = await uploadChatImage(file);
+    const imageUrl = await uploadToCloudinary(file, 'chat');
     await sendMessage(chatRoomId, {
       text: '📷 Image',
       imageUrl,
@@ -80,37 +83,42 @@ export default function ChatBox({ recipientId, recipientName, recipientPhoto }: 
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)]">
-      {/* Header */}
-      <div className="p-4 border-b dark:border-gray-800 flex items-center space-x-4">
-        <button 
-          onClick={() => navigate('/chat')}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <img
-          src={recipientPhoto}
-          alt={recipientName}
-          className="w-10 h-10 rounded-full"
-        />
-        <div>
-          <h2 className="font-semibold">{recipientName}</h2>
+    <div className="flex flex-col h-[calc(100vh-4rem)]">
+      <InboxHeader 
+        user={{
+          id: recipientId,
+          name: recipientName,
+          photoURL: recipientPhoto,
+          isOnline: true // You can add real-time online status logic here
+        }}
+        onSettingsClick={() => navigate(`/profile/${recipientId}`)}
+      />
+
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-2xl mx-auto">
+          <MessageList 
+            messages={messages}
+            currentUserId={currentUser?.uid || ''}
+            ref={messagesEndRef}
+          />
         </div>
       </div>
 
-      {/* Messages */}
-      <MessageList 
-        messages={messages}
-        currentUserId={currentUser?.uid || ''}
-        ref={messagesEndRef}
-      />
+      <div className="border-t dark:border-gray-800">
+        <div className="max-w-2xl mx-auto">
+          <ChatInput
+            onSendMessage={handleSendMessage}
+            onSendImage={handleSendImage}
+            disabled={loading}
+          />
+        </div>
+      </div>
 
-      {/* Input */}
-      <ChatInput
-        onSendMessage={handleSendMessage}
-        onSendImage={handleSendImage}
-        disabled={loading}
+      <ImagePreviewModal
+        isOpen={showImageModal}
+        onClose={() => setShowImageModal(false)}
+        imageUrl={recipientPhoto}
+        userName={recipientName}
       />
     </div>
   );
