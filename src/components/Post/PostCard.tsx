@@ -1,5 +1,4 @@
-import { useState,useEffect } from 'react';
-import LinesEllipsis from 'react-lines-ellipsis'; // Fixed import
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { formatPostDate } from '../../lib/utils/date/formatters';
@@ -9,7 +8,7 @@ import { CommentService } from '../../lib/services/commentService';
 import PostHeader from './PostHeader';
 import PostImage from './PostImage';
 import PostActions from './PostActions';
-import PostComments from './PostComments';
+import CommentSection from './CommentSection';
 import ImageModal from './ImageModal';
 import { Post } from '../../lib/types';
 import toast from 'react-hot-toast';
@@ -21,10 +20,8 @@ interface PostCardProps {
 
 export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
   const [isLiked, setIsLiked] = useState(false);
-  const [showComments, setShowComments] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [isPublic, setIsPublic] = useState(post.isPublic ?? true);
-  const [ellipsis, setEllipsis] = useState(false);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
@@ -53,7 +50,7 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
     }
   };
 
-  const handleComment = async (text: string) => {
+  const handleAddComment = async (text: string) => {
     if (!currentUser) {
       toast.error('Please sign in to comment');
       return false;
@@ -75,18 +72,29 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
     }
   };
 
+  const handleDeleteComment = async (commentId: string) => {
+    if (!currentUser) return false;
+
+    try {
+      await CommentService.deleteComment(post.id, commentId);
+      return true;
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      toast.error('Failed to delete comment');
+      return false;
+    }
+  };
+
   const handlePrivacyChange = (newIsPublic: boolean) => {
     setIsPublic(newIsPublic);
     onPrivacyChange?.(post.id, newIsPublic);
   };
 
-  const handleEllipsis = () => setEllipsis(!ellipsis);
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-sm  mb-4"
+      className="bg-white dark:bg-gray-800 rounded-lg shadow-sm mb-4"
     >
       <PostHeader
         userId={post.userId}
@@ -94,6 +102,7 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
         userPhoto={post.userPhoto}
         imageUrl={post.imageUrl}
         postId={post.id}
+        caption={post.caption}
         createdAt={post.createdAt}
         isPublic={isPublic}
         onPrivacyChange={handlePrivacyChange}
@@ -101,27 +110,9 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
 
       {post.caption && (
         <div className="px-4 py-2">
-          {ellipsis ? (
-            <p
-              onClick={handleEllipsis}
-              className="cursor-pointer whitespace-pre-wrap text-gray-800 dark:text-gray-200"
-            >
-              {post.caption}
-            </p>
-          ) : (
-            <div
-              onClick={handleEllipsis}
-              className="cursor-pointer"
-            >
-              <LinesEllipsis
-                text={post.caption}
-                maxLine={3}
-                ellipsis="... see more"
-                trimRight
-                basedOn="letters"
-              />
-            </div>
-          )}
+          <p className="whitespace-pre-wrap text-gray-800 dark:text-gray-200">
+            {post.caption}
+          </p>
         </div>
       )}
 
@@ -139,15 +130,15 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
         isLiked={isLiked}
         setIsLiked={setIsLiked}
         likesCount={post.likes.length}
-        onCommentClick={() => setShowComments(!showComments)}
         onImageClick={() => setShowImageModal(true)}
         onLike={handleLike}
       />
 
-      <PostComments
+      <CommentSection
         postId={post.id}
         comments={post.comments}
-        isVisible={showComments}
+        onAddComment={handleAddComment}
+        onDeleteComment={handleDeleteComment}
       />
 
       <ImageModal
