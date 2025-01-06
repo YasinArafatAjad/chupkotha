@@ -30,7 +30,7 @@ export default function CreatePost() {
         // if (file.size > 5 * 1024 * 1024) {
         //   throw new Error('Image must be less than 5MB');
         // }
-        // setImage(file);
+        setImage(file);
         const previewUrl = URL.createObjectURL(file);
         setPreview(previewUrl);
       } catch (error: any) {
