@@ -16,17 +16,8 @@ export interface Post {
   imageUrl: string;
   caption: string;
   likes: string[];
-  comments: Comment[];
   createdAt: any;
   isPublic?: boolean;
-}
-
-export interface Comment {
-  id: string;
-  userId: string;
-  userName: string;
-  text: string;
-  createdAt: any;
 }
 
 export interface Message {

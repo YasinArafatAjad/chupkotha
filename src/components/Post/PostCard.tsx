@@ -1,14 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { formatPostDate } from '../../lib/utils/date/formatters';
 import { useAuth } from '../../contexts/AuthContext';
 import { PostService } from '../../lib/services/postService';
-import { CommentService } from '../../lib/services/commentService';
 import PostHeader from './PostHeader';
 import PostImage from './PostImage';
 import PostActions from './PostActions';
-import CommentSection from './CommentSection';
 import ImageModal from './ImageModal';
 import { Post } from '../../lib/types';
 import toast from 'react-hot-toast';
@@ -25,16 +23,6 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (currentUser) {
-      setIsLiked(post.likes.includes(currentUser.uid));
-    }
-  }, [currentUser, post.likes]);
-
-  useEffect(() => {
-    setIsPublic(post.isPublic ?? true);
-  }, [post.isPublic]);
-
   const handleLike = async () => {
     if (!currentUser) {
       toast.error('Please sign in to like posts');
@@ -46,41 +34,6 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
       return success;
     } catch (error) {
       console.error('Error toggling like:', error);
-      return false;
-    }
-  };
-
-  const handleAddComment = async (text: string) => {
-    if (!currentUser) {
-      toast.error('Please sign in to comment');
-      return false;
-    }
-
-    try {
-      const commentData = {
-        text,
-        userId: currentUser.uid,
-        userName: currentUser.displayName || 'Anonymous',
-        userPhoto: currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.displayName || 'Anonymous')}&background=random`
-      };
-
-      await CommentService.addComment(post.id, commentData, post.userId);
-      return true;
-    } catch (error) {
-      console.error('Error adding comment:', error);
-      return false;
-    }
-  };
-
-  const handleDeleteComment = async (commentId: string) => {
-    if (!currentUser) return false;
-
-    try {
-      await CommentService.deleteComment(post.id, commentId);
-      return true;
-    } catch (error) {
-      console.error('Error deleting comment:', error);
-      toast.error('Failed to delete comment');
       return false;
     }
   };
@@ -130,15 +83,7 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
         isLiked={isLiked}
         setIsLiked={setIsLiked}
         likesCount={post.likes.length}
-        onImageClick={() => setShowImageModal(true)}
         onLike={handleLike}
-      />
-
-      <CommentSection
-        postId={post.id}
-        comments={post.comments}
-        onAddComment={handleAddComment}
-        onDeleteComment={handleDeleteComment}
       />
 
       <ImageModal
