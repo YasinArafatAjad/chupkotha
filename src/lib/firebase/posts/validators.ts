@@ -11,7 +11,7 @@ export const validateImageFile = (file: File) => {
     throw new Error('Please select an image file');
   }
 
-  if (file.size > 5 * 1024 * 1024) {
-    throw new Error('Image size should be less than 5MB');
-  }
+  // if (file.size > 5 * 1024 * 1024) {
+  //   throw new Error('Image size should be less than 5MB');
+  // }
 };

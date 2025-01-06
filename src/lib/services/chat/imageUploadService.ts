@@ -7,9 +7,9 @@ export async function uploadChatImage(file: File): Promise<string> {
       throw new Error('Please select an image file');
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      throw new Error('Image must be less than 5MB');
-    }
+    // if (file.size > 5 * 1024 * 1024) {
+    //   throw new Error('Image must be less than 5MB');
+    // }
 
     return await uploadToCloudinary(file, 'chat');
   } catch (error: any) {
