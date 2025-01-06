@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Camera, Loader, Globe, Crop } from 'lucide-react';
+import { X, Camera } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useProfileUpdate } from '../../hooks/useProfileUpdate';
-import { getUserProfile } from '../../lib/firebase/profile/profileService';
 import ImageCropper from './ImageCropper';
-import toast from 'react-hot-toast';
+import LoadingAnimation from '../common/LoadingAnimation';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -14,47 +13,29 @@ interface EditProfileModalProps {
 
 export default function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
   const { currentUser } = useAuth();
-  const { updateProfile, loading, error } = useProfileUpdate();
+  const { updateProfile, loading } = useProfileUpdate();
   const [displayName, setDisplayName] = useState(currentUser?.displayName || '');
   const [bio, setBio] = useState('');
   const [website, setWebsite] = useState('');
-  const [newImage, setNewImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const [showCropper, setShowCropper] = useState(false);
-  const [cropperImage, setCropperImage] = useState<string>('');
+  const [cropperImage, setCropperImage] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadProfile = async () => {
-      if (currentUser) {
-        try {
-          const profile = await getUserProfile(currentUser.uid);
-          if (profile) {
-            setDisplayName(profile.displayName || '');
-            setBio(profile.bio || '');
-            setWebsite(profile.website || '');
-            setImagePreview(profile.photoURL || null);
-          }
-        } catch (error) {
-          console.error('Error loading profile:', error);
-          toast.error('Failed to load profile data');
-        }
-      }
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentUser) return;
 
-    if (isOpen) {
-      loadProfile();
+    const success = await updateProfile(displayName, bio, website, image);
+    if (success) {
+      onClose();
     }
-  }, [currentUser, isOpen]);
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image size should be less than 5MB');
-        return;
-      }
       if (!file.type.startsWith('image/')) {
-        toast.error('Please select an image file');
         return;
       }
 
@@ -67,118 +48,76 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     }
   };
 
-  const handleCroppedImage = async (blob: Blob) => {
-    const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
-    setNewImage(file);
-    setImagePreview(URL.createObjectURL(blob));
+  const handleCroppedImage = (croppedBlob: Blob) => {
+    const file = new File([croppedBlob], 'profile.jpg', { type: 'image/jpeg' });
+    setImage(file);
+    setPreview(URL.createObjectURL(croppedBlob));
     setShowCropper(false);
   };
 
-  const handleStartCrop = () => {
-    if (imagePreview) {
-      setCropperImage(imagePreview);
-      setShowCropper(true);
-    }
-  };
-
-  const validateWebsite = (url: string): boolean => {
-    if (!url) return true; // Empty URL is valid
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!displayName.trim()) {
-      toast.error('Display name is required');
-      return;
-    }
-
-    if (!validateWebsite(website)) {
-      toast.error('Please enter a valid website URL');
-      return;
-    }
-
-    const success = await updateProfile(displayName, bio, website, newImage);
-    if (success) {
-      onClose();
-      // Reset form
-      setNewImage(null);
-      setImagePreview(null);
-    }
-  };
+  if (!isOpen) return null;
 
   return (
     <AnimatePresence>
-      {isOpen && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+      >
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          initial={{ scale: 0.95 }}
+          animate={{ scale: 1 }}
+          exit={{ scale: 0.95 }}
+          className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6"
         >
-          <motion.div
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.95 }}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full"
-          >
-            <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
-              <h2 className="text-lg font-semibold">Edit Profile</h2>
-              <button
-                onClick={onClose}
-                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
-              >
-                <X className="w-5 h-5" />
-              </button>
+          <div className="flex justify-between items-start mb-6">
+            <h3 className="text-lg font-semibold">Edit Profile</h3>
+            <button
+              onClick={onClose}
+              className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Profile Image */}
+            <div className="flex justify-center">
+              <div className="relative">
+                <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
+                  {preview ? (
+                    <img
+                      src={preview}
+                      alt="Profile preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : currentUser?.photoURL ? (
+                    <img
+                      src={currentUser.photoURL}
+                      alt="Current profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Camera className="w-8 h-8 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                <label className="absolute bottom-0 right-0 p-1 bg-primary text-white rounded-full cursor-pointer hover:bg-primary/90 transition-colors">
+                  <Camera className="w-4 h-4" />
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                  />
+                </label>
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-4 space-y-4">
-              <div className="flex flex-col items-center">
-                <div className="relative group">
-                  <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
-                    {imagePreview ? (
-                      <img
-                        src={imagePreview}
-                        alt="Profile preview"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Camera className="w-8 h-8 text-gray-400" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="absolute inset-0 bg-black/50 rounded-full" />
-                    <div className="relative z-10 flex space-x-2">
-                      <label className="p-1 bg-white rounded-full cursor-pointer hover:bg-gray-100 transition-colors">
-                        <Camera className="w-5 h-5 text-gray-600" />
-                        <input
-                          type="file"
-                          className="hidden"
-                          accept="image/*"
-                          onChange={handleImageChange}
-                        />
-                      </label>
-                      {imagePreview && (
-                        <button
-                          type="button"
-                          onClick={handleStartCrop}
-                          className="p-1 bg-white rounded-full hover:bg-gray-100 transition-colors"
-                        >
-                          <Crop className="w-5 h-5 text-gray-600" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+            {/* Form Fields */}
+            <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Display Name
@@ -202,67 +141,55 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                   className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                   rows={3}
                   maxLength={150}
-                  placeholder="Tell us about yourself..."
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  {bio.length}/150 characters
+                </p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Website
                 </label>
-                <div className="relative">
-                  <input
-                    type="url"
-                    value={website}
-                    onChange={(e) => setWebsite(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="https://example.com"
-                  />
-                  <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                </div>
+                <input
+                  type="url"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="https://example.com"
+                />
               </div>
+            </div>
 
-              {error && (
-                <div className="text-red-500 text-sm">{error}</div>
-              )}
+            {/* Actions */}
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading || !displayName.trim()}
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 flex items-center space-x-2"
+              >
+                {loading ? <LoadingAnimation /> : 'Save Changes'}
+              </button>
+            </div>
+          </form>
 
-              <div className="flex justify-end space-x-2 pt-4">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg disabled:opacity-50 flex items-center space-x-2"
-                >
-                  {loading ? (
-                    <>
-                      <Loader className="w-4 h-4 animate-spin" />
-                      <span>Updating...</span>
-                    </>
-                  ) : (
-                    <span>Save Changes</span>
-                  )}
-                </button>
-              </div>
-            </form>
-          </motion.div>
-
-          <AnimatePresence>
-            {showCropper && (
-              <ImageCropper
-                image={cropperImage}
-                onCrop={handleCroppedImage}
-                onClose={() => setShowCropper(false)}
-              />
-            )}
-          </AnimatePresence>
+          {/* Image Cropper Modal */}
+          {showCropper && cropperImage && (
+            <ImageCropper
+              image={cropperImage}
+              onCrop={handleCroppedImage}
+              onClose={() => setShowCropper(false)}
+            />
+          )}
         </motion.div>
-      )}
+      </motion.div>
     </AnimatePresence>
   );
 }
