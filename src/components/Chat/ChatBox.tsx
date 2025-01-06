@@ -84,7 +84,7 @@ export default function ChatBox({ recipientId, recipientName, recipientPhoto }: 
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)]">
-      <InboxHeader 
+      {/* <InboxHeader 
         user={{
           id: recipientId,
           name: recipientName,
@@ -92,7 +92,7 @@ export default function ChatBox({ recipientId, recipientName, recipientPhoto }: 
           isOnline: true // You can add real-time online status logic here
         }}
         onSettingsClick={() => navigate(`/profile/${recipientId}`)}
-      />
+      /> */}
 
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl mx-auto">

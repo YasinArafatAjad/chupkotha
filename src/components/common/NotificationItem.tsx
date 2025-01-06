@@ -51,9 +51,10 @@ export default function NotificationItem({ notification, onClose }: Notification
     <Link
       to={getLink()}
       onClick={onClose}
-      className="flex items-center p-4 hover:bg-gray-50 dark:hover:bg-gray-700 border-b dark:border-gray-700 last:border-0"
+      className="flex items-center justify-start pr-4 "
     >
-      <img
+      <div className="flex items-center p-4 hover:bg-gray-50 dark:hover:bg-gray-700 border-b dark:border-gray-700 last:border-0">
+        <img
         src={notification.senderPhoto}
         alt={notification.senderName}
         className="w-10 h-10 rounded-full"
@@ -68,7 +69,8 @@ export default function NotificationItem({ notification, onClose }: Notification
           {formatDistanceToNow(notification.createdAt.toDate(), { addSuffix: true })}
         </p>
       </div>
-      {getIcon()}
+      </div>
+      <span className="ml-6" >{getIcon()}</span>
     </Link>
   );
 }

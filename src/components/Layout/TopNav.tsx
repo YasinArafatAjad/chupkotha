@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
@@ -10,60 +10,54 @@ import Logo from './Logo';
 
 export default function TopNav() {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const { currentUser } = useAuth();
   const { notifications } = useNotifications();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      setIsVisible(currentScrollY < 10 || currentScrollY < lastScrollY);
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
+  const handleNotificationClick = () => {
+    navigate('/notifications');
+  };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 z-50 border-b dark:border-gray-800">
-      <div className="container mx-auto px-4 h-14 flex items-center justify-between">
-        <Link to="/" className="flex items-center">
-          <Logo />
-        </Link>
+    <AnimatePresence>
+      {isVisible && (
+        <motion.header
+          initial={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -100 }}
+          transition={{ duration: 0.2 }}
+          className="fixed top-0 left-0 right-0 bg-white dark:bg-gray-900 z-50 border-b dark:border-gray-800"
+        >
+          <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+            <Link to="/" className="flex items-center">
+              <Logo />
+            </Link>
 
-        <div className="relative">
-          <button
-            onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
-          >
-            <Bell className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-            <NotificationBadge count={notifications.length} />
-          </button>
-
-          <AnimatePresence>
-            {showNotifications && (
-              <>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-40"
-                  onClick={() => setShowNotifications(false)}
-                />
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto"
-                >
-                  {notifications.length === 0 ? (
-                    <div className="p-4 text-center text-gray-500">
-                      No new notifications
-                    </div>
-                  ) : (
-                    notifications.map((notification) => (
-                      <NotificationItem
-                        key={notification.id}
-                        notification={notification}
-                        onClose={() => setShowNotifications(false)}
-                      />
-                    ))
-                  )}
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    </header>
+            <div className="relative">
+              <button
+                onClick={handleNotificationClick}
+                className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
+              >
+                <Bell className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                <NotificationBadge count={notifications.length} />
+              </button>
+            </div>
+          </div>
+        </motion.header>
+      )}
+    </AnimatePresence>
   );
 }

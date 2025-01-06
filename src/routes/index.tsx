@@ -11,6 +11,7 @@ import Post from '../pages/Post';
 import Create from '../pages/Create';
 import Users from '../pages/Users';
 import AccountSettings from '../pages/AccountSettings';
+import Notifications from '../pages/Notifications';
 import DirectChat from '../components/Chat/DirectChat';
 import ProtectedRoute from './ProtectedRoute';
 
@@ -18,21 +19,22 @@ export default function AppRoutes() {
   const { currentUser } = useAuth();
 
   return (
-    <Routes>
-      <Route path="/login" element={!currentUser ? <Login /> : <Navigate to="/" />} />
-      <Route path="/signup" element={!currentUser ? <SignUp /> : <Navigate to="/" />} />
+    <Routes future={{ v7_relativeSplatPath: true }}>
+      <Route path="login" element={!currentUser ? <Login /> : <Navigate to="/" />} />
+      <Route path="signup" element={!currentUser ? <SignUp /> : <Navigate to="/" />} />
       
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/create" element={<Create />} />
-          <Route path="/profile/:userId" element={<Profile />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/users" element={<Users />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/chat/:userId" element={<DirectChat />} />
-          <Route path="/post/:postId" element={<Post />} />
-          <Route path="/settings/account" element={<AccountSettings />} />
+          <Route index element={<Home />} />
+          <Route path="create" element={<Create />} />
+          <Route path="profile/:userId" element={<Profile />} />
+          <Route path="explore" element={<Explore />} />
+          <Route path="users" element={<Users />} />
+          <Route path="chat" element={<Chat />} />
+          <Route path="chat/:userId" element={<DirectChat />} />
+          <Route path="post/:postId" element={<Post />} />
+          <Route path="notifications" element={<Notifications />} />
+          <Route path="settings/account" element={<AccountSettings />} />
         </Route>
       </Route>
     </Routes>
