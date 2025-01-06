@@ -67,14 +67,16 @@ export default function PostActions({
           >
             <Heart className="w-6 h-6" fill={isLiked ? 'currentColor' : 'none'} />
           </motion.button>
-          {/* <button onClick={onCommentClick} className="text-gray-500">
+          <button onClick={onCommentClick} className="text-gray-500">
             <MessageCircle className="w-6 h-6" />
-          </button> */}
-          <button onClick={handleShare} className="text-gray-500">
+          </button>          
+        </div>
+        <div className="flex items-center justify-between mb-2">
+          <button onClick={handleShare} className="text-gray-500 ">
             <Share2 className="w-6 h-6" />
           </button>
-        </div>
         <SaveButton postId={postId} />
+        </div>
       </div>
       <div className="font-semibold">{likesCount} likes</div>
     </div>

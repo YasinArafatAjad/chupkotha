@@ -19,10 +19,10 @@ export default function ImageUploadButton({ onImageSelect, disabled }: ImageUplo
     }
 
     // Validate file size (5MB limit)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be less than 5MB');
-      return;
-    }
+    // if (file.size > 5 * 1024 * 1024) {
+    //   toast.error('Image must be less than 5MB');
+    //   return;
+    // }
 
     onImageSelect(file);
   };
