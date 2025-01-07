@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface ActiveUser {
   id: string;
@@ -77,7 +79,7 @@ export default function ActiveUsers() {
             transition={{ delay: index * 0.1 }}
           >
             <Link to={`/chat/${user.id}`} className="block relative">
-              <img
+              <LazyLoadImage effect="blur"
                 src={user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}`}
                 alt={user.displayName || 'User'}
                 className="w-12 h-12 rounded-full border-2 border-white dark:border-gray-800"

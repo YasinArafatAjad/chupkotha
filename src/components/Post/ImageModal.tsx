@@ -1,5 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface ImageModalProps {
   imageUrl: string;
@@ -33,7 +35,7 @@ export default function ImageModal({ imageUrl, caption, isOpen, onClose }: Image
           >
             <X className="w-6 h-6" />
           </button>
-          <img
+          <LazyLoadImage effect="blur"
             src={imageUrl}
             alt={caption}
             className="max-w-full max-h-[90vh] object-contain"

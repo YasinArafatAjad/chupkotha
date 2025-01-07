@@ -4,6 +4,8 @@ import { collection, query, limit, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { User } from '../../lib/types';
 import { UserCircle } from 'lucide-react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 export default function UserList({ onClose }: { onClose: () => void }) {
   const [users, setUsers] = useState<User[]>([]);
@@ -60,7 +62,7 @@ export default function UserList({ onClose }: { onClose: () => void }) {
           className="w-full flex items-center space-x-3 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
         >
           {user.photoURL ? (
-            <img
+            <LazyLoadImage effect="blur"
               src={user.photoURL}
               alt={user.displayName}
               className="w-10 h-10 rounded-full"

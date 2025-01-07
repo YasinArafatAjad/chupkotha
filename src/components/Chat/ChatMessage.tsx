@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface ChatMessageProps {
   message: {
@@ -23,7 +25,7 @@ export default function ChatMessage({ message, isOwnMessage, onImageClick }: Cha
         isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''
       }`}
     >
-      <img
+      <LazyLoadImage effect="blur"
         src={message.userPhoto}
         alt={message.userName}
         className="w-8 h-8 rounded-full"
@@ -36,7 +38,7 @@ export default function ChatMessage({ message, isOwnMessage, onImageClick }: Cha
         }`}
       >
         {message.imageUrl ? (
-          <img 
+          <LazyLoadImage effect="blur" 
             src={message.imageUrl} 
             alt="Shared image"
             className="rounded-lg max-w-full cursor-pointer hover:opacity-90 transition-opacity"

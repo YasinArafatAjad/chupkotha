@@ -3,6 +3,8 @@ import { Send, ChevronDown, ChevronUp, UserCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useComments } from '../../hooks/useComments';
 import { useAuth } from '../../contexts/AuthContext';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface PostCommentsProps {
   postId: string;
@@ -45,7 +47,7 @@ export default function PostComments({ postId, comments, isVisible }: PostCommen
             >
               <div className="relative w-6 h-6 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800">
                 {comment.userPhoto ? (
-                  <img
+                  <LazyLoadImage effect="blur"
                     src={comment.userPhoto}
                     alt={comment.userName}
                     className="w-full h-full object-cover"

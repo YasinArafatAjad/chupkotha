@@ -5,7 +5,9 @@ import LoadingAnimation from "../common/LoadingAnimation";
 import ImageUpload from "./ImageUpload";
 import ImageCropper from "../Profile/ImageCropper";
 import toast from 'react-hot-toast';
-import { Camera, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface SignUpFormProps {
   onSubmit: (

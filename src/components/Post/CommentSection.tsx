@@ -5,6 +5,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 import toast from 'react-hot-toast';
 import LoadingAnimation from '../common/LoadingAnimation';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface Comment {
   id: string;
@@ -100,7 +102,7 @@ export default function CommentSection({
               transition={{ delay: index * 0.1 }}
               className="flex items-start space-x-2 group"
             >
-              <img
+              <LazyLoadImage effect="blur"
                 src={comment.userPhoto}
                 alt={comment.userName}
                 className="w-8 h-8 rounded-full"

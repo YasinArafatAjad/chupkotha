@@ -2,6 +2,8 @@ import { forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ImageWithFallback from '../common/ImageWithFallback';
 import { formatMessageDate } from '../../lib/utils/date/formatters';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface Message {
   id: string;
@@ -54,7 +56,7 @@ const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
                 }`}
               >
                 {message.imageUrl ? (
-                  <img 
+                  <LazyLoadImage effect="blur" 
                     src={message.imageUrl} 
                     alt="Shared image"
                     className="rounded-lg max-w-full cursor-pointer hover:opacity-90 transition-opacity"

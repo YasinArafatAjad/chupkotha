@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-import LazyImage from '../common/LazyImage';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface PostImageProps {
   imageUrl: string;
@@ -15,9 +16,10 @@ const PostImage = memo(({ imageUrl, caption, onClick }: PostImageProps) => {
       whileHover={{ scale: 0.995 }}
       onClick={onClick}
     >
-      <LazyImage
+      <LazyLoadImage
         src={imageUrl}
         alt={caption}
+        effect="blur"
         className="w-full h-full object-cover"
       />
     </motion.div>

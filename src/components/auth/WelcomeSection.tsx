@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
 import { Camera } from "lucide-react";
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 export default function WelcomeSection() {
   return (
     <div className="hidden lg:flex lg:w-1/2 relative">
-      <img
+      <LazyLoadImage effect="blur"
         src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963"
         alt="Beautiful landscape"
         className="absolute inset-0 w-full h-full object-cover"
@@ -45,14 +47,14 @@ export default function WelcomeSection() {
               </div>
             </div>
             <div className="w-12 h-12 rounded-full overflow-hidden">
-              <img
+              <LazyLoadImage effect="blur"
                 src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9"
                 alt="Feature"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="w-12 h-12 rounded-full overflow-hidden">
-              <img
+              <LazyLoadImage effect="blur"
                 src="https://images.unsplash.com/photo-1533050487297-09b450131914"
                 alt="Feature"
                 className="w-full h-full object-cover"

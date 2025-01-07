@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { UserCircle } from 'lucide-react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface ImageWithFallbackProps {
   src: string;
@@ -20,7 +22,7 @@ export default function ImageWithFallback({ src, alt, className, onClick }: Imag
   }
 
   return (
-    <img
+    <LazyLoadImage effect="blur"
       src={src}
       alt={alt}
       className={className}

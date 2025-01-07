@@ -4,6 +4,8 @@ import { db } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface Message {
   id: string;
@@ -64,7 +66,7 @@ export default function ChatMessages({ chatId, otherUser }: ChatMessagesProps) {
               isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''
             }`}
           >
-            <img
+            <LazyLoadImage effect="blur"
               src={isOwnMessage ? currentUser?.photoURL : otherUser.photoURL}
               alt=""
               className="w-6 h-6 rounded-full"

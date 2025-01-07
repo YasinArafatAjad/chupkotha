@@ -1,5 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface ProfileImageModalProps {
   isOpen: boolean;
@@ -36,7 +38,7 @@ export default function ProfileImageModal({ isOpen, onClose, imageUrl, userName 
           >
             <X className="w-6 h-6" />
           </button>
-            <img
+            <LazyLoadImage effect="blur"
               src={imageUrl}
               alt={`${userName}'s profile`}
               className="w-full h-full  rounded-lg"

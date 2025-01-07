@@ -3,6 +3,8 @@ import { Settings, Mail, Globe, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import ProfileImageModal from './ProfileImageModal';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface ProfileHeaderProps {
   profile: {
@@ -42,7 +44,7 @@ export default function ProfileHeader({ profile, isOwnProfile, onEditProfile }: 
           onClick={() => setShowImageModal(true)}
           className="relative w-24 h-24 rounded-full border-2 border-gray-200 dark:border-gray-700 overflow-hidden cursor-pointer"
         >
-          <img
+          <LazyLoadImage effect="blur"
             src={profile.photoURL || 'https://via.placeholder.com/80'}
             alt={profile.displayName}
             className="w-full h-full object-cover"

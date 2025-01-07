@@ -6,6 +6,8 @@ import { useProfileUpdate } from '../../hooks/useProfileUpdate';
 import { getUserProfile } from '../../lib/firebase/profile/profileService';
 import ImageCropper from './ImageCropper';
 import toast from 'react-hot-toast';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -142,7 +144,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                 <div className="relative group">
                   <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
                     {imagePreview ? (
-                      <img
+                      <LazyLoadImage effect="blur"
                         src={imagePreview}
                         alt="Profile preview"
                         className="w-full h-full object-cover"

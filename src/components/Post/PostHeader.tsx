@@ -3,6 +3,8 @@ import { Clock, Globe, Lock } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import PostMenu from './PostMenu';
 import { formatPostDate } from '../../lib/utils/date/formatters';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface PostHeaderProps {
   userId: string;
@@ -34,7 +36,7 @@ export default function PostHeader({
     <div className="p-4 space-y-2">
       <div className="flex items-center justify-between">
         <Link to={`/profile/${userId}`} className="flex items-center space-x-3">
-          <img
+          <LazyLoadImage effect="blur"
             src={userPhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}`}
             alt={userName}
             className="w-10 h-10 rounded-full object-cover"

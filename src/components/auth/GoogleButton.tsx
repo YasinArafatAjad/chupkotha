@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface GoogleButtonProps {
   onClick: () => Promise<void>;
@@ -39,7 +41,7 @@ export default function GoogleButton({ onClick, disabled }: GoogleButtonProps) {
           disabled={disabled}
           className="w-full flex justify-center items-center space-x-2 py-3 px-4 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors disabled:opacity-50"
         >
-          <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
+          <LazyLoadImage effect="blur" src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
           <span>Google</span>
         </motion.button>
 

@@ -1,4 +1,6 @@
 import { Camera, X } from 'lucide-react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface ImageUploadPreviewProps {
   preview: string | null;
@@ -15,7 +17,7 @@ export default function ImageUploadPreview({
     <div className="relative aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
       {preview ? (
         <>
-          <img
+          <LazyLoadImage effect="blur"
             src={preview}
             alt="Preview"
             className="w-full h-full object-cover"

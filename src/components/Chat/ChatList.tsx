@@ -4,6 +4,8 @@ import { db } from '../../lib/firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import { motion } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface ChatUser {
   id: string;
@@ -59,7 +61,7 @@ export default function ChatList({ onSelectChat }: { onSelectChat: (userId: stri
           onClick={() => onSelectChat(chat.id)}
           className="w-full p-4 flex items-center space-x-3 hover:bg-gray-50 dark:hover:bg-gray-800"
         >
-          <img
+          <LazyLoadImage effect="blur"
             src={chat.photoURL}
             alt={chat.displayName}
             className="w-12 h-12 rounded-full"

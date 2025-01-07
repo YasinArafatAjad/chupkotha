@@ -8,7 +8,6 @@ import ChatInput from './ChatInput';
 import MessageList from './MessageList';
 import LoadingAnimation from '../common/LoadingAnimation';
 import ImagePreviewModal from './ImagePreviewModal';
-import InboxHeader from './InboxHeader';
 import toast from 'react-hot-toast';
 
 interface ChatBoxProps {

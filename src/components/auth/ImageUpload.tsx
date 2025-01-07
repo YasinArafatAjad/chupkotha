@@ -1,5 +1,7 @@
 import { Camera, Upload } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface ImageUploadProps {
   imageUrl: string | null;
@@ -27,7 +29,7 @@ export default function ImageUpload({ imageUrl, onImageChange }: ImageUploadProp
       <div className="relative group">
         <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
           {imageUrl ? (
-            <img
+            <LazyLoadImage effect="blur"
               src={imageUrl}
               alt="Profile preview"
               className="w-full h-full object-cover"

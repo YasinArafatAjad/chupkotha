@@ -5,6 +5,8 @@ import { User } from '../lib/types';
 import { Search, UserCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 export default function Users() {
   const [users, setUsers] = useState<User[]>([]);
@@ -74,7 +76,7 @@ export default function Users() {
                 className="flex items-center space-x-4 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 {user.photoURL ? (
-                  <img
+                  <LazyLoadImage effect="blur"
                     src={user.photoURL}
                     alt={user.displayName}
                     className="w-16 h-16 rounded-full"

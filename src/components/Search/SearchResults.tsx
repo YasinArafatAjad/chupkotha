@@ -2,6 +2,8 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { SearchResult } from '../../lib/services/searchService';
 import { User, MessageCircle, Image } from 'lucide-react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface SearchResultsProps {
   results: SearchResult[];
@@ -54,7 +56,7 @@ export default function SearchResults({ results, loading, onResultClick }: Searc
           >
             <div className="flex-shrink-0">
               {result.imageUrl ? (
-                <img
+                <LazyLoadImage effect="blur"
                   src={result.imageUrl}
                   alt={result.title}
                   className="w-10 h-10 rounded-full object-cover"

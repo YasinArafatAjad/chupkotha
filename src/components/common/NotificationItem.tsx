@@ -54,7 +54,7 @@ export default function NotificationItem({ notification, onClose }: Notification
       className="flex items-center justify-between pr-4 "
     >
       <div className="flex items-center  p-4 hover:bg-gray-50 dark:hover:bg-gray-700 border-b dark:border-gray-700 last:border-0">
-        <img
+        <LazyLoadImage effect="blur"
         src={notification.senderPhoto}
         alt={notification.senderName}
         className="w-10 h-10 rounded-full"

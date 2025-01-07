@@ -3,6 +3,8 @@ import { formatDistanceToNow } from 'date-fns';
 import { Heart, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Notification } from '../../lib/services/notificationService';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface NotificationDropdownProps {
   notifications: Notification[];
@@ -32,7 +34,7 @@ export default function NotificationDropdown({ notifications, onClose }: Notific
           className="flex items-center p-4 hover:bg-gray-50 dark:hover:bg-gray-700 border-b dark:border-gray-700 last:border-0"
           onClick={onClose}
         >
-          <img
+          <LazyLoadImage effect="blur"
             src={notification.senderPhoto}
             alt={notification.senderName}
             className="w-10 h-10 rounded-full"

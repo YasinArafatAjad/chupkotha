@@ -4,6 +4,8 @@ import { db } from '../../lib/firebase';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface ChatHeaderProps {
   recipientId: string;
@@ -55,7 +57,7 @@ export default function ChatHeader({ recipientId, recipientName, recipientPhoto 
         
         <div className="flex items-center space-x-3">
           <div className="relative">
-            <img
+            <LazyLoadImage effect="blur"
               src={recipientPhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(recipientName)}`}
               alt={recipientName}
               className="w-8 h-8 rounded-full"
