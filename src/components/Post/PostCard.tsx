@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { formatPostDate } from '../../lib/utils/date/formatters';
@@ -18,10 +18,19 @@ interface PostCardProps {
 
 export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
   const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
   const [showImageModal, setShowImageModal] = useState(false);
   const [isPublic, setIsPublic] = useState(post.isPublic ?? true);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if current user has liked the post
+    if (currentUser && post.likes) {
+      setIsLiked(post.likes.includes(currentUser.uid));
+      setLikesCount(post.likes.length);
+    }
+  }, [currentUser, post.likes]);
 
   const handleLike = async () => {
     if (!currentUser) {
@@ -31,6 +40,10 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
 
     try {
       const success = await PostService.toggleLike(post.id, currentUser.uid);
+      if (success) {
+        setIsLiked(!isLiked);
+        setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
+      }
       return success;
     } catch (error) {
       console.error('Error toggling like:', error);
@@ -82,8 +95,10 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
         userId={currentUser?.uid}
         isLiked={isLiked}
         setIsLiked={setIsLiked}
-        likesCount={post.likes.length}
+        likesCount={likesCount}
         onLike={handleLike}
+        onCommentClick={() => {}}
+        onImageClick={() => setShowImageModal(true)}
       />
 
       <ImageModal

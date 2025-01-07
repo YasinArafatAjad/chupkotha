@@ -63,14 +63,20 @@ export default function PostActions({
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={handleLike}
-            className={isLiked ? 'text-red-500' : 'text-gray-500'}
+            className={`transition-colors ${isLiked ? 'text-red-500' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
           >
             <Heart className="w-6 h-6" fill={isLiked ? 'currentColor' : 'none'} />
           </motion.button>
-          {/* <button onClick={onCommentClick} className="text-gray-500">
+          <button 
+            onClick={onCommentClick} 
+            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+          >
             <MessageCircle className="w-6 h-6" />
-          </button> */}
-          <button onClick={handleShare} className="text-gray-500">
+          </button>
+          <button 
+            onClick={handleShare} 
+            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+          >
             <Share2 className="w-6 h-6" />
           </button>
         </div>

@@ -35,7 +35,7 @@ export default function PostHeader({
       <div className="flex items-center justify-between">
         <Link to={`/profile/${userId}`} className="flex items-center space-x-3">
           <img
-            src={ userPhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}`}
+            src={userPhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}`}
             alt={userName}
             className="w-10 h-10 rounded-full object-cover"
           />
@@ -54,16 +54,14 @@ export default function PostHeader({
             </div>
           </div>
         </Link>
-        {isOwnPost && (
-          <PostMenu 
-            postId={postId} 
-            imageUrl={imageUrl} 
-            userId={userId} 
-            caption={caption}
-            isPublic={isPublic}
-            onPrivacyChange={onPrivacyChange}
-          />
-        )}
+        <PostMenu 
+          postId={postId} 
+          imageUrl={imageUrl} 
+          userId={userId} 
+          caption={caption}
+          isPublic={isPublic}
+          onPrivacyChange={onPrivacyChange}
+        />
       </div>
     </div>
   );

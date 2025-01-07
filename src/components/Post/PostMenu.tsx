@@ -14,15 +14,24 @@ interface PostMenuProps {
   caption: string;
   imageUrl?: string;
   isPublic?: boolean;
+  onPrivacyChange?: (isPublic: boolean) => void;
 }
 
-export default function PostMenu({ postId, userId, caption, imageUrl, isPublic = true }: PostMenuProps) {
+export default function PostMenu({ 
+  postId, 
+  userId, 
+  caption, 
+  imageUrl, 
+  isPublic = true,
+  onPrivacyChange 
+}: PostMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const isOwnPost = currentUser?.uid === userId;
 
   const handleCopyLink = async () => {
     try {
@@ -78,7 +87,7 @@ export default function PostMenu({ postId, userId, caption, imageUrl, isPublic =
                 <span>Copy link</span>
               </button>
 
-              {currentUser?.uid === userId && (
+              {isOwnPost ? (
                 <>
                   <button
                     onClick={() => {
@@ -117,18 +126,18 @@ export default function PostMenu({ postId, userId, caption, imageUrl, isPublic =
                     <span>Delete post</span>
                   </button>
                 </>
+              ) : (
+                <button
+                  onClick={() => {
+                    toast.success('Post reported');
+                    setIsOpen(false);
+                  }}
+                  className="w-full px-4 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
+                >
+                  <Flag className="w-4 h-4" />
+                  <span>Report post</span>
+                </button>
               )}
-
-              <button
-                onClick={() => {
-                  toast.success('Post reported');
-                  setIsOpen(false);
-                }}
-                className="w-full px-4 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
-              >
-                <Flag className="w-4 h-4" />
-                <span>Report post</span>
-              </button>
             </motion.div>
           </>
         )}
@@ -153,6 +162,7 @@ export default function PostMenu({ postId, userId, caption, imageUrl, isPublic =
         onClose={() => setShowPrivacyModal(false)}
         postId={postId}
         currentPrivacy={isPublic}
+        onPrivacyChange={onPrivacyChange}
       />
     </div>
   );
