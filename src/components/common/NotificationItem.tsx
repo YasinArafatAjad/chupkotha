@@ -51,9 +51,9 @@ export default function NotificationItem({ notification, onClose }: Notification
     <Link
       to={getLink()}
       onClick={onClose}
-      className="flex items-center justify-start pr-4 "
+      className="flex items-center justify-between pr-4 "
     >
-      <div className="flex items-center p-4 hover:bg-gray-50 dark:hover:bg-gray-700 border-b dark:border-gray-700 last:border-0">
+      <div className="flex items-center  p-4 hover:bg-gray-50 dark:hover:bg-gray-700 border-b dark:border-gray-700 last:border-0">
         <img
         src={notification.senderPhoto}
         alt={notification.senderName}
