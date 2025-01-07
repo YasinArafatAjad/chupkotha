@@ -20,87 +20,82 @@ interface ChatBoxProps {
 export default function ChatBox({ recipientId, recipientName, recipientPhoto }: ChatBoxProps) {
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [chatRoomId, setChatRoomId] = useState<string | null>(null);
   const [showImageModal, setShowImageModal] = useState(false);
   const { currentUser } = useAuth();
-  const navigate = useNavigate();
+  const { messages: chatMessages, sendChatMessage, error } = useChat(recipientId);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const initializeChat = async () => {
-      if (!currentUser || !recipientId) return;
-      
-      try {
-        const roomId = await getOrCreateChatRoom(currentUser.uid, recipientId);
-        setChatRoomId(roomId);
-        await markMessagesAsRead(roomId, currentUser.uid);
-      } catch (error) {
-        console.error('Error initializing chat:', error);
-        toast.error('Failed to load chat');
-      }
-    };
-
-    initializeChat();
-  }, [currentUser, recipientId]);
+    if (error) {
+      toast.error('Failed to load chat messages');
+    }
+  }, [error]);
 
   useEffect(() => {
-    if (!chatRoomId) return;
-
-    const unsubscribe = subscribeToMessages(chatRoomId, (newMessages) => {
-      setMessages(newMessages);
-      scrollToBottom();
-    });
-
-    return () => unsubscribe();
-  }, [chatRoomId]);
+    setMessages(chatMessages);
+    scrollToBottom();
+  }, [chatMessages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleSendMessage = async (text: string) => {
-    if (!currentUser || !chatRoomId) return;
+    if (!currentUser) {
+      toast.error('Please sign in to send messages');
+      return;
+    }
 
-    await sendMessage(chatRoomId, {
-      text,
-      senderId: currentUser.uid,
-      senderName: currentUser.displayName || 'Anonymous',
-      senderPhoto: currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.displayName || 'Anonymous')}`
-    });
+    setLoading(true);
+    try {
+      await sendChatMessage({
+        text,
+        userId: currentUser.uid,
+        userName: currentUser.displayName || 'Anonymous',
+        userPhoto: currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.displayName || 'Anonymous')}`
+      });
+    } catch (error) {
+      toast.error('Failed to send message');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSendImage = async (file: File) => {
-    if (!currentUser || !chatRoomId) return;
+    if (!currentUser) return;
 
-    const imageUrl = await uploadToCloudinary(file, 'chat');
-    await sendMessage(chatRoomId, {
-      text: '📷 Image',
-      imageUrl,
-      senderId: currentUser.uid,
-      senderName: currentUser.displayName || 'Anonymous',
-      senderPhoto: currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.displayName || 'Anonymous')}`
-    });
+    setLoading(true);
+    try {
+      const imageUrl = await uploadToCloudinary(file, 'chat');
+      await sendChatMessage({
+        text: '📷 Image',
+        userId: currentUser.uid,
+        userName: currentUser.displayName || 'Anonymous',
+        userPhoto: currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.displayName || 'Anonymous')}`,
+        imageUrl
+      });
+    } catch (error) {
+      toast.error('Failed to send image');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)]">
-      {/* <InboxHeader 
-        user={{
-          id: recipientId,
-          name: recipientName,
-          photoURL: recipientPhoto,
-          isOnline: true // You can add real-time online status logic here
-        }}
-        onSettingsClick={() => navigate(`/profile/${recipientId}`)}
-      /> */}
-
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl mx-auto">
-          <MessageList 
-            messages={messages}
-            currentUserId={currentUser?.uid || ''}
-            ref={messagesEndRef}
-          />
+          {loading ? (
+            <div className="flex justify-center p-4">
+              <LoadingAnimation />
+            </div>
+          ) : (
+            <MessageList 
+              messages={messages}
+              currentUserId={currentUser?.uid || ''}
+              ref={messagesEndRef}
+            />
+          )}
         </div>
       </div>
 
