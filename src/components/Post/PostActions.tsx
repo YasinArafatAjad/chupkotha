@@ -71,7 +71,7 @@ export default function PostActions({
             onClick={onCommentClick} 
             className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
           >
-            <MessageCircle className="w-6 h-6" />
+            {/* <MessageCircle className="w-6 h-6" /> */}
           </button>
           <button 
             onClick={handleShare} 
