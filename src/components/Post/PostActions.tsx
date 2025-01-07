@@ -1,4 +1,4 @@
-import { Heart, Share2 } from 'lucide-react';
+import { Heart, MessageCircle, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SaveButton from './SaveButton';
 import toast from 'react-hot-toast';
@@ -9,6 +9,8 @@ interface PostActionsProps {
   isLiked: boolean;
   setIsLiked: (value: boolean) => void;
   likesCount: number;
+  onCommentClick: () => void;
+  onImageClick: () => void;
   onLike: () => Promise<boolean>;
 }
 
@@ -18,6 +20,8 @@ export default function PostActions({
   isLiked,
   setIsLiked,
   likesCount,
+  onCommentClick,
+  onImageClick,
   onLike
 }: PostActionsProps) {
   const handleLike = async () => {
@@ -63,13 +67,14 @@ export default function PostActions({
           >
             <Heart className="w-6 h-6" fill={isLiked ? 'currentColor' : 'none'} />
           </motion.button>
-        </div>
-        <div className="flex items-center space-x-4">
+          {/* <button onClick={onCommentClick} className="text-gray-500">
+            <MessageCircle className="w-6 h-6" />
+          </button> */}
           <button onClick={handleShare} className="text-gray-500">
             <Share2 className="w-6 h-6" />
           </button>
-          <SaveButton postId={postId} />
         </div>
+        <SaveButton postId={postId} />
       </div>
       <div className="font-semibold">{likesCount} likes</div>
     </div>
