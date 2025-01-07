@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { onSnapshot, collection, query, orderBy, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
+import { onSnapshot, collection, query, orderBy, addDoc, serverTimestamp, doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase/config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
@@ -21,10 +21,8 @@ export function useChat(otherUserId: string) {
   useEffect(() => {
     if (!currentUser || !otherUserId) return;
 
-    // Create a unique chat room ID
     const chatRoomId = [currentUser.uid, otherUserId].sort().join('_');
 
-    // Ensure chat room document exists
     const setupChatRoom = async () => {
       const chatRoomRef = doc(db, 'chatRooms', chatRoomId);
       await setDoc(chatRoomRef, {
@@ -35,7 +33,6 @@ export function useChat(otherUserId: string) {
 
     setupChatRoom().catch(console.error);
 
-    // Subscribe to messages
     const messagesRef = collection(db, `chatRooms/${chatRoomId}/messages`);
     const q = query(messagesRef, orderBy('createdAt', 'asc'));
 
@@ -65,18 +62,34 @@ export function useChat(otherUserId: string) {
     }
 
     const chatRoomId = [currentUser.uid, otherUserId].sort().join('_');
-    const messagesRef = collection(db, `chatRooms/${chatRoomId}/messages`);
 
     try {
-      // Add message
+      // Get recipient user data
+      const recipientDoc = await getDoc(doc(db, 'users', otherUserId));
+      const recipientData = recipientDoc.data();
+
+      // Add message to chat room
+      const messagesRef = collection(db, `chatRooms/${chatRoomId}/messages`);
       await addDoc(messagesRef, {
         ...messageData,
         createdAt: serverTimestamp()
       });
 
-      // Update chat room
-      const chatRoomRef = doc(db, 'chatRooms', chatRoomId);
-      await setDoc(chatRoomRef, {
+      // Update current user's conversations
+      await setDoc(doc(db, `users/${currentUser.uid}/conversations/${otherUserId}`), {
+        userId: otherUserId,
+        displayName: recipientData?.displayName || 'User',
+        photoURL: recipientData?.photoURL,
+        lastMessage: messageData.text,
+        lastMessageTime: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+
+      // Update recipient's conversations
+      await setDoc(doc(db, `users/${otherUserId}/conversations/${currentUser.uid}`), {
+        userId: currentUser.uid,
+        displayName: currentUser.displayName || 'User',
+        photoURL: currentUser.photoURL,
         lastMessage: messageData.text,
         lastMessageTime: serverTimestamp(),
         updatedAt: serverTimestamp()
