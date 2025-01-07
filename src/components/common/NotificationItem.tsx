@@ -3,6 +3,8 @@ import { formatDistanceToNow } from 'date-fns';
 import { Heart, MessageCircle, Share2, UserPlus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Notification } from '../../lib/services/notificationService';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface NotificationItemProps {
   notification: Notification;

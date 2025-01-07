@@ -86,7 +86,7 @@ export default function AccountInfo() {
     try {
       return format(new Date(date), 'MMMM d, yyyy');
     } catch {
-      return 'Not set';
+      return 'Edit birth date';
     }
   };
 
@@ -203,7 +203,7 @@ export default function AccountInfo() {
           ) : (
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                {currentUser?.birthDate ? formatBirthDate(currentUser?.birthDate) : 'Not set'}
+                {currentUser?.birthDate ? formatBirthDate(currentUser?.birthDate) : 'Edit birth date'}
               </span>
               <button
                 onClick={() => setIsEditing('birthDate')}
