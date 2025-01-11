@@ -10,6 +10,7 @@ import PostActions from './PostActions';
 import ImageModal from './ImageModal';
 import { Post } from '../../lib/types';
 import toast from 'react-hot-toast';
+import LinesEllipsis from "react-lines-ellipsis";
 
 interface PostCardProps {
   post: Post;
@@ -51,6 +52,10 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
     }
   };
 
+  // Line ellipsis
+  const [ellipsis, setEllipsis] = useState(false);
+  const handleEllipsis = () => setEllipsis(!ellipsis);
+
   const handlePrivacyChange = (newIsPublic: boolean) => {
     setIsPublic(newIsPublic);
     onPrivacyChange?.(post.id, newIsPublic);
@@ -74,12 +79,27 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
         onPrivacyChange={handlePrivacyChange}
       />
 
-      {post.caption && (
-        <div className="px-4 py-2">
-          <p className="whitespace-pre-wrap text-gray-800 dark:text-gray-200">
-            {post.caption}
-          </p>
+      {ellipsis ? (
+        <p
+          onClick={handleEllipsis}
+          className="cursor-pointer caption text-wrap whitespace-pre pt-5 pl-5 text-sm text-slate-700 dark:text-[#fbfcfc]"
+        >
+          {caption}
+        </p>
+      ) : (
+        <div
+          onClick={handleEllipsis}
+          className="cursor-pointer caption text-wrap whitespace-pre pt-5 pl-5 text-sm text-slate-700 dark:text-[#fbfcfc]"
+        >
+          <LinesEllipsis
+            text={caption}
+            maxLine={3}
+            ellipsis={<span>...see more</span>}
+            trimRight
+            basedOn="letters"
+          />
         </div>
+      )}
       )}
 
       {post.imageUrl && (
@@ -97,7 +117,7 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
         setIsLiked={setIsLiked}
         likesCount={likesCount}
         onLike={handleLike}
-        onCommentClick={() => {}}
+        onCommentClick={() => { }}
         onImageClick={() => setShowImageModal(true)}
       />
 
