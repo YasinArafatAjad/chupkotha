@@ -38,7 +38,7 @@ export default function ImageUploadButton({ onImageSelect, disabled }: ImageUplo
       <input
         type="file"
         className="hidden"
-        accept="image/*"
+        accept="image/* , video/*"
         onChange={handleFileChange}
         disabled={disabled}
       />
