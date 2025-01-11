@@ -36,7 +36,7 @@ export default function ImageUploadPreview({
           <span className="mt-2 text-sm text-gray-500">Choose a photo</span>
           <input
             type="file"
-            accept="image/* , video/*"
+            accept="image/* , videovideo/*"
             onChange={onImageChange}
             className="hidden"
           />

@@ -12,11 +12,11 @@ export default function ImageUploadButton({ onImageSelect, disabled }: ImageUplo
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file');
-      return;
-    }
+   // Validate file type
+   // if (!file.type.startsWith('image/')) {
+     // toast.error('Please select an image file');
+     // return;
+    //}
 
     // Validate file size (5MB limit)
     // if (file.size > 5 * 1024 * 1024) {
