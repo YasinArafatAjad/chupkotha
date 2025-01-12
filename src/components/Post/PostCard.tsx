@@ -82,25 +82,25 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
       {ellipsis ? (
         <p
           onClick={handleEllipsis}
-          className="cursor-pointer caption text-wrap whitespace-pre pt-5 pl-5 text-sm text-slate-700 dark:text-[#fbfcfc]"
+          className="cursor-pointer caption text-wrap whitespace-pre px-4 py-2 text-gray-800 dark:text-gray-200"
         >
-          {caption}
+          {post.caption}
         </p>
       ) : (
         <div
           onClick={handleEllipsis}
-          className="cursor-pointer caption text-wrap whitespace-pre pt-5 pl-5 text-sm text-slate-700 dark:text-[#fbfcfc]"
+          className="cursor-pointer caption text-wrap whitespace-pre px-4 py-2 text-gray-800 dark:text-gray-200"
         >
           <LinesEllipsis
-            text={caption}
-            maxLine={3}
+            text={post.caption}
+            maxLine={4}
             ellipsis={<span>...see more</span>}
             trimRight
             basedOn="letters"
           />
         </div>
       )}
-      )}
+
 
       {post.imageUrl && (
         <PostImage
@@ -123,7 +123,7 @@ export default function PostCard({ post, onPrivacyChange }: PostCardProps) {
 
       <ImageModal
         imageUrl={post.imageUrl}
-        caption={post.caption}
+        
         isOpen={showImageModal}
         onClose={() => setShowImageModal(false)}
       />

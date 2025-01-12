@@ -40,11 +40,11 @@ export default function ImageModal({ imageUrl, caption, isOpen, onClose }: Image
             alt={caption}
             className="max-w-full max-h-[90vh] object-contain"
           />
-          {caption && (
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-black/50 text-white">
-              <p>{caption}</p>
-            </div>
-          )}
+
+
+
+
+
         </motion.div>
       </motion.div>
     </AnimatePresence>
