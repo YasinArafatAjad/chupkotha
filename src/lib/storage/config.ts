@@ -4,8 +4,8 @@ import { app } from '../firebase/app';
 export const storage = getStorage(app);
 
 export const storageConfig = {
-  maxSizeMB: 5,
-  allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+  maxSizeMB: 10240,
+  allowedTypes: ['image/*', 'video/*'],
   corsHeaders: {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, OPTIONS',
