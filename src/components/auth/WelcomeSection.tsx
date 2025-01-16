@@ -1,12 +1,15 @@
 import { motion } from "framer-motion";
 import { Camera } from "lucide-react";
-import { LazyLoadImage } from 'react-lazy-load-image-component';
-import 'react-lazy-load-image-component/src/effects/blur.css';
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
+import LogoW from "../../../public/assets/ChupkothaLogo_transparent.png"
+import LogoB from "../../../public/assets/ChupkothaLogo_transparent_Dark.png"
 
 export default function WelcomeSection() {
   return (
     <div className="hidden lg:flex lg:w-1/2 relative">
-      <LazyLoadImage effect="blur"
+      <LazyLoadImage
+        effect="blur"
         src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963"
         alt="Beautiful landscape"
         className="absolute inset-0 w-full h-full object-cover"
@@ -23,10 +26,31 @@ export default function WelcomeSection() {
             Share your moments, connect with friends, and discover amazing
             stories.
           </p>
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-              <div className="logo-icon w-[6rem] h-[6rem]">
-                <svg
+          <div className="flex items-center  space-x-4">
+            
+            <div className="w-12 h-12 rounded-full overflow-hidden">
+              <LazyLoadImage
+                effect="blur"
+                src="https://res.cloudinary.com/diqrdzriq/image/upload/v1736110030/profiles/profile_svwhjj.jpg"
+                alt="Feature"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className=" w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+              <div className="logo-icon w-[8rem] ">
+                <LazyLoadImage
+                  effect="blur"
+                  src={LogoW}
+                  alt="Chupkotha Logo"
+                  className="w-full h-full object-cover dark:hidden"
+                />
+                <LazyLoadImage
+                  effect="blur"
+                  src={LogoB}
+                  alt="Chupkotha Logo"
+                  className="w-full h-full object-cover dark:block hidden"
+                />
+                {/* <svg
                   version="1.0"
                   xmlns="http://www.w3.org/2000/svg"
                   width="100%"
@@ -43,19 +67,13 @@ export default function WelcomeSection() {
                     <path d="M1350 1377 c3 -3 37 -17 75 -31 88 -33 164 -85 216 -147 42 -50 109 -170 109 -195 0 -8 5 -14 10 -14 6 0 10 6 10 14 0 26 70 152 112 200 53 62 140 118 226 147 80 27 62 35 -47 20 -145 -19 -246 -77 -281 -161 -7 -16 -15 -30 -19 -30 -4 0 -15 16 -26 36 -31 57 -100 112 -169 133 -57 17 -227 39 -216 28z" />
                     <path d="M1583 757 c88 -246 41 -473 -118 -574 -25 -15 -45 -32 -45 -37 0 -13 91 4 134 26 21 11 52 34 67 51 35 38 46 30 31 -21 -16 -52 -64 -117 -112 -150 -62 -43 -52 -51 39 -31 66 14 126 59 153 114 12 25 25 45 28 45 4 0 15 -18 25 -39 32 -72 91 -112 188 -126 30 -5 47 -4 47 3 0 6 -9 13 -19 17 -35 11 -107 99 -130 158 -32 88 -24 104 21 38 28 -42 96 -78 163 -86 l50 -6 -29 23 c-79 61 -118 105 -149 167 -31 63 -32 70 -31 186 0 94 5 134 22 185 24 71 21 87 -9 50 -40 -50 -91 -171 -117 -279 -15 -61 -29 -111 -32 -111 -3 0 -17 49 -31 109 -31 129 -79 238 -122 278 -21 19 -28 23 -24 10z" />
                   </g>
-                </svg>
+                </svg> */}
               </div>
             </div>
             <div className="w-12 h-12 rounded-full overflow-hidden">
-              <LazyLoadImage effect="blur"
-                src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9"
-                alt="Feature"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="w-12 h-12 rounded-full overflow-hidden">
-              <LazyLoadImage effect="blur"
-                src="https://images.unsplash.com/photo-1533050487297-09b450131914"
+              <LazyLoadImage
+                effect="blur"
+                src="https://res.cloudinary.com/diqrdzriq/image/upload/v1736332741/profiles/profile_vngt8j.jpg"
                 alt="Feature"
                 className="w-full h-full object-cover"
               />
