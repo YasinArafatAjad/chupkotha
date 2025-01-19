@@ -144,7 +144,7 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
         </p>
       </div>
 
-      <ImageUpload imageUrl={imagePreview} onImageChange={handleImageChange} />
+      {/*<ImageUpload imageUrl={imagePreview} onImageChange={handleImageChange} /> */}
 
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-4">
