@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import LoadingAnimation from "../common/LoadingAnimation";
-import ImageUpload from "./ImageUpload";
+// import ImageUpload from "./ImageUpload";
 import ImageCropper from "../Profile/ImageCropper";
 import toast from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
@@ -162,7 +161,7 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-              placeholder="John Doe"
+              placeholder="Your Full Name"
             />
           </div>
 
@@ -176,6 +175,7 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
             <input
               id="birthDate"
               type="date"
+              placeholder="Your Date of Birth "
               required
               value={birthDate}
               onChange={(e) => setBirthDate(e.target.value)}
@@ -198,7 +198,7 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-              placeholder="john@example.com"
+              placeholder="bilasy@gmail.com"
             />
           </div>
 
@@ -217,7 +217,7 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-              placeholder="••••••••"
+              placeholder="New Password"
               minLength={6}
             />
             <button
@@ -245,7 +245,8 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-              placeholder="••••••••"
+              placeholder="Confirm Password"
+
             />
             <button
                 type="button"
@@ -279,7 +280,7 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
             onClick={() => navigate("/login")}
             className="font-medium text-primary hover:text-primary/90 transition-colors"
           >
-            Sign in
+            Create New Account 
           </button>
         </p>
       </div>
