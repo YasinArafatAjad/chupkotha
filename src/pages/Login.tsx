@@ -166,7 +166,7 @@ export default function Login() {
                   onClick={() => navigate("/signup")}
                   className="text-primary hover:text-primary/90 font-medium"
                 >
-                  Sign up
+                  Create New Account
                 </button>
               </p>
             </motion.div>

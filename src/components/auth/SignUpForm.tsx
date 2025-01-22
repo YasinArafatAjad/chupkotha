@@ -198,7 +198,7 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-              placeholder="bilasy@gmail.com"
+              placeholder="yourmail@gmail.com"
             />
           </div>
 
@@ -280,7 +280,7 @@ export default function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
             onClick={() => navigate("/login")}
             className="font-medium text-primary hover:text-primary/90 transition-colors"
           >
-            Create New Account 
+            Log in
           </button>
         </p>
       </div>
