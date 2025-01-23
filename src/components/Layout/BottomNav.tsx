@@ -27,6 +27,10 @@ export default function BottomNav() {
 
   const isActive = (path: string) => location.pathname === path;
 
+  // Hide bottom nav in chat
+  const isChat = location.pathname.startsWith('/chat/');
+  if (isChat) return null;
+
   return (
     <AnimatePresence>
       {isVisible && (
