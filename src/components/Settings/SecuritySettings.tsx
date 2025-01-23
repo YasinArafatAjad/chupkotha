@@ -64,6 +64,7 @@ export default function SecuritySettings() {
       
       <div className="space-y-4">
         {/* Email Settings */}
+        {/*}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Mail className="w-5 h-5 text-gray-500" />
@@ -79,6 +80,7 @@ export default function SecuritySettings() {
             Change Email
           </button>
         </div>
+        */}
 
         {/* Password Settings */}
         <div className="flex items-center justify-between">
