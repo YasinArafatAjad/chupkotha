@@ -141,7 +141,7 @@ function ChatBox({ recipientId, recipientName, recipientPhoto }: ChatBoxProps) {
       </div>
 
       <div className="border-t dark:border-gray-800">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto mb-4">
           <ChatInput
             onSendMessage={handleSendMessage}
             onSendImage={handleSendImage}
