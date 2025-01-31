@@ -21,14 +21,14 @@ export async function uploadToCloudinary(file: File, folder: string = 'posts'): 
     );
 
     if (!response.ok) {
-      throw new Error('Upload failed');
+      throw new Error('Upload fail');
     }
 
     const data: UploadResponse = await response.json();
     return data.secure_url;
   } catch (error) {
     console.error('Cloudinary upload error:', error);
-    toast.error('Failed to upload image');
+    toast.error('Failed to upload this image');
     throw error;
   }
 }
