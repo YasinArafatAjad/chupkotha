@@ -34,7 +34,7 @@ export default function ProfileImageModal({ isOpen, onClose, imageUrl, userName 
           <div className="relative  aspect-square max-h-[90vh]">
             <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+            className="absolute top-4 right-4 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors z-[100]"
           >
             <X className="w-6 h-6" />
           </button>

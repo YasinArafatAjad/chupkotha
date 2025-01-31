@@ -12,14 +12,14 @@ export default function ImageUpload({ imageUrl, onImageChange }: ImageUploadProp
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // if (file.size > 5 * 1024 * 1024) {
-      //   alert('Image size should be less than 5MB');
-      //   return;
-      // }
+      /* if (file.size > 5 * 1024 * 1024) {
+         alert('Image size should be less than 5MB');
+         return;
+       }
       if (!file.type.startsWith('image/')) {
         alert('Please upload an image file');
         return;
-      }
+      } */
       onImageChange(file);
     }
   };
@@ -45,7 +45,7 @@ export default function ImageUpload({ imageUrl, onImageChange }: ImageUploadProp
           <input
             type="file"
             className="hidden"
-            accept="image/*"
+            accept="image/*, video/*"
             onChange={handleFileChange}
           />
         </label>

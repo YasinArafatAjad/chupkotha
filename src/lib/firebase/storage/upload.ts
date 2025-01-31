@@ -5,13 +5,13 @@ import toast from 'react-hot-toast';
 
 export async function uploadFile(file: File, path: string): Promise<string> {
   // Validate file
-  if (!storageConfig.allowedTypes.includes(file.type)) {
+  /* if (!storageConfig.allowedTypes.includes(file.type)) {
     throw new Error('Invalid file type. Only images are allowed.');
   }
 
   if (file.size > storageConfig.maxSizeMB * 1024 * 1024) {
     throw new Error(`File size must be less than ${storageConfig.maxSizeMB}MB`);
-  }
+  } */
 
   try {
     // Create unique filename

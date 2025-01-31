@@ -6,13 +6,13 @@ import toast from 'react-hot-toast';
 export async function uploadProfileImage(file: File, userId: string): Promise<string> {
   try {
     // Validate file
-    if (!file.type.startsWith('image/')) {
-      throw new Error('Invalid file type. Please upload an image.');
-    }
+    //if (!file.type.startsWith('image/')) {
+     // throw new Error('Invalid file type. Please upload an image.');
+   // }
 
-    if (file.size > 5 * 1024 * 1024) {
-      throw new Error('File size too large. Maximum size is 5MB.');
-    }
+    //if (file.size > 5 * 1024 * 1024) {
+     // throw new Error('File size too large. Maximum size is 5MB.');
+    //}
 
     // Create unique filename
     const ext = file.name.split('.').pop();
@@ -43,13 +43,13 @@ export async function uploadProfileImage(file: File, userId: string): Promise<st
 export async function uploadPostImage(file: File, userId: string): Promise<string> {
   try {
     // Validate file
-    if (!file.type.startsWith('image/')) {
-      throw new Error('Invalid file type. Please upload an image.');
-    }
+   // if (!file.type.startsWith('image/')) {
+   //   throw new Error('Invalid file type. Please upload an image.');
+    //}
 
-    if (file.size > 5 * 1024 * 1024) {
-      throw new Error('File size too large. Maximum size is 5MB.');
-    }
+    //if (file.size > 5 * 1024 * 1024) {
+     // throw new Error('File size too large. Maximum size is 5MB.');
+    //}
 
     // Create unique filename
     const ext = file.name.split('.').pop();
